@@ -1,0 +1,83 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model users {
+  id        String     @id @db.Uuid
+  firstName String?    @db.VarChar
+  lastName  String?    @db.VarChar
+  type      String     @db.VarChar
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime   @default(now()) @db.Timestamptz(6)
+  deletedAt DateTime?  @db.Timestamptz(6)
+  comments  comments[]
+  reports   reports[]
+}
+
+model changelog {
+  id         BigInt   @id @default(autoincrement())
+  objectType String?  @db.VarChar
+  objectId   Int?
+  userId     String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @db.Timestamptz(6)
+  oldValue   Json
+  newValue   Json
+  objectAttr String   @db.VarChar
+}
+
+model comments {
+  id         Int       @id @default(autoincrement())
+  objectType String    @db.VarChar
+  objectId   Int
+  content    String
+  replyTo    Int?
+  creatorId  String    @db.Uuid
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime  @default(now()) @db.Timestamptz(6)
+  deletedAt  DateTime? @db.Timestamptz(6)
+  users      users     @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model reportTypes {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar
+  group       String    @db.VarChar
+  markerColor String?   @db.VarChar
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime  @default(now()) @db.Timestamptz(6)
+  deletedAt   DateTime? @db.Timestamptz(6)
+  reports     reports[]
+}
+
+model reports {
+  id            Int       @id @default(autoincrement())
+  email         String?   @db.VarChar
+  streetNumber  Int?
+  streetName    String?   @db.VarChar
+  postalCode    String?   @db.VarChar
+  neighborhood  String?   @db.VarChar
+  lat           Float
+  lng           Float
+  location      Json
+  images        Json?     @db.Json
+  status        String    @db.VarChar
+  details       String?
+  reportTypeId  Int
+  assignedTo    String?   @db.VarChar
+  scheduledDate DateTime? @db.Timestamptz(6)
+  creatorId     String?   @db.Uuid
+  createdAt     DateTime? @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime? @default(now()) @db.Timestamptz(6)
+  deletedAt     DateTime? @db.Timestamptz(6)
+
+  reportTypes reportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users?      @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
