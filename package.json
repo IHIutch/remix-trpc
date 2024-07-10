@@ -63,6 +63,6 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "lint-staged": {
-    "app/**/*.{js,jsx,ts,tsx,md,mdx,json}": "eslint --fix"
+    "**/*.{js,jsx,ts,tsx,md,mdx,json}": "eslint --fix"
   }
 }
