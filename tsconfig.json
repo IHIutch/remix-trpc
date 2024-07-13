@@ -18,7 +18,8 @@
     "resolveJsonModule": true,
     "types": [
       "@remix-run/node",
-      "vite/client"
+      "vite/client",
+      "@remix-run/react/future/single-fetch.d.ts"
     ],
     "allowJs": true,
     "strict": true,

@@ -39,5 +39,6 @@
   "tailwindCSS.classAttributes": [
     "class",
     "className"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

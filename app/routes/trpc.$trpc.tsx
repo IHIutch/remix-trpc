@@ -7,7 +7,7 @@ import {
   unstable_defineLoader as defineLoader,
 } from '@remix-run/node'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { createContext } from '#/utils/trpc.server'
+import { createContext } from '#/utils/trpc'
 import { appRouter } from '#/utils/trpc/routers'
 
 function handleRequest(args: LoaderFunctionArgs | ActionFunctionArgs) {

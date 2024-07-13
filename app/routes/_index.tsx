@@ -4,22 +4,31 @@ import {
 } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import dayjs from 'dayjs'
-import { trpcClient } from '#/utils/trpc-client'
+import { createTRPCQueryUtils } from '@trpc/react-query'
+import { QueryClient } from '@tanstack/react-query'
+import { trpc, trpcClientInit } from '#/utils/trpc-client-client'
 
 export const meta: MetaFunction = () => {
   return [
     { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
   ]
 }
 
-export const loader = defineLoader(async ({ request }) => {
-  const reports = await trpcClient(request).reports.getAll.query()
+const queryClient = new QueryClient()
+const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClientInit })
+
+export const loader = defineLoader(async () => {
+  // const caller = createCaller({})
+  const reports = await clientUtils.reports.getAll.ensureData()
   return { reports }
 })
 
 export default function Index() {
-  const { reports } = useLoaderData<typeof loader>()
+  const { reports: initialData } = useLoaderData<typeof loader>()
+  const { data: reports } = trpc.reports.getAll.useQuery(undefined, {
+    initialData,
+    refetchOnMount: !initialData,
+  })
 
   return (
     <div className="flex h-full flex-col">

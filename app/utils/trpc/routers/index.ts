@@ -1,6 +1,6 @@
 import { reportsRouter } from './reports'
 import { authRouter } from './auth'
-import { router } from '#/utils/trpc.server'
+import { router } from '#/utils/trpc'
 
 export const appRouter = router({
   auth: authRouter,
