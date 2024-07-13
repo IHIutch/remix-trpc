@@ -8,7 +8,7 @@ import {
 } from '@remix-run/node'
 import { parseWithZod } from '@conform-to/zod'
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
-import { createClient } from '#/utils/supabase.server'
+import { createClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
 
 const schema = z.object({
@@ -79,8 +79,8 @@ export async function action({
     }
   }
 
-  const supabase = createClient(request)
-  const { error } = await supabase.auth.signInWithPassword({
+  const { supabaseClient, headers } = createClient(request)
+  const { error } = await supabaseClient.auth.signInWithPassword({
     email: submission.value.email,
     password: submission.value.password,
   })
@@ -93,5 +93,5 @@ export async function action({
     }
   }
 
-  return redirect('/protected')
+  return redirect('/protected', { headers })
 }

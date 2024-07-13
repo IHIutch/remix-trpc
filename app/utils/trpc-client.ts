@@ -2,7 +2,7 @@ import process from 'node:process'
 
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import superjson from 'superjson'
-import type { AppRouter } from './routers'
+import type { AppRouter } from './trpc/routers'
 
 const devUrl = `http://localhost:${process.env.PORT}/trpc`
 const prodUrl = 'http://localhost:3000/trpc' // change to your real domain when deploy to prod

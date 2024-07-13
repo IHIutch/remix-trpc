@@ -12,10 +12,12 @@ export const env = createEnv({
     POSTGRES_PRISMA_URL: z.string().url(),
     POSTGRES_URL_NON_POOLING: z.string().url(),
   },
-  client: {
+  shared: {
     // # Supabase
     PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
     PUBLIC_SUPABASE_URL: z.string().min(1).url(),
+  },
+  client: {
     // # Misc
     // PUBLIC_ROOT_DOMAIN: z.string().min(1),
     // # Sentry

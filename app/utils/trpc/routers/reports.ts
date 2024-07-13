@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { prisma } from '../prisma.server'
 import { publicProcedure, router } from '#/utils/trpc.server'
+import { prisma } from '#/utils/prisma.server'
 
 export const reportsRouter = router({
   getAll: publicProcedure.query(async () => {
@@ -8,18 +8,21 @@ export const reportsRouter = router({
       orderBy: {
         id: 'asc',
       },
+      include: {
+        reportTypes: true,
+      },
     })
   }),
   getById: publicProcedure.input(
     z.object({
-      where: z.object({
-        id: z.number(),
-      }),
+      id: z.number(),
     }),
   ).query(async ({ input }) => {
-    const { where } = input
-    return await prisma.reports.findFirst({
-      where,
+    const { id } = input
+    return await prisma.reports.findUnique({
+      where: {
+        id,
+      },
     })
   }),
 })

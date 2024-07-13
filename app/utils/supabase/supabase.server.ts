@@ -4,7 +4,7 @@ import { env } from '#/env'
 export function createClient(request: Request) {
   const headers = new Headers()
 
-  return createServerClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY, {
+  const supabaseClient = createServerClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
         return parseCookieHeader(request.headers.get('Cookie') ?? '')
@@ -16,4 +16,6 @@ export function createClient(request: Request) {
       },
     },
   })
+
+  return { supabaseClient, headers }
 }

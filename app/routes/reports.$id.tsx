@@ -16,9 +16,7 @@ export const meta: MetaFunction = () => {
 export const loader = defineLoader(async ({ request, params }: LoaderFunctionArgs) => {
   invariant(params.id, 'Missing report \'id\'')
   const report = await trpcClient(request).reports.getById.query({
-    where: {
-      id: Number(params.id),
-    },
+    id: Number(params.id),
   })
   return { report }
 })
@@ -27,7 +25,7 @@ export default function Index() {
   const { report } = useLoaderData<typeof loader>()
 
   return (
-    <div className="font-sans p-4">
+    <div className="p-4 font-sans">
       <h1 className="text-3xl">Welcome to Remix</h1>
       <pre>{JSON.stringify(report, null, 2)}</pre>
     </div>

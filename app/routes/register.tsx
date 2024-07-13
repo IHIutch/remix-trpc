@@ -8,23 +8,15 @@ import type {
 } from '@remix-run/node'
 import {
   redirect,
-  // unstable_defineLoader as defineLoader,
 } from '@remix-run/node'
-import { createClient } from '#/utils/supabase.server'
+import { createClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
 
 const schema = z.object({
   email: z.string().min(1),
   password: z.string().min(1),
   confirmPassword: z.string().min(1),
-}).refine(schema => schema.password === schema.confirmPassword, 'Passwords must match')
-
-// export const loader = defineLoader(async ({ request }) => {
-//     const url = new URL(request.url);
-//     const message = url.searchParams.get("message");
-
-//     return { message }
-// });
+}).refine(schema => schema.password === schema.confirmPassword, 'Passwords don\'t match')
 
 export default function SignIn() {
   const response = useActionData<typeof action>()
@@ -91,8 +83,8 @@ export async function action({
     }
   }
 
-  const supabase = createClient(request)
-  const { error } = await supabase.auth.signUp({
+  const { supabaseClient } = createClient(request)
+  const { error } = await supabaseClient.auth.signUp({
     email: submission.value.email,
     password: submission.value.password,
     options: {

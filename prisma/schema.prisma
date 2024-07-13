@@ -1,52 +1,62 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
+  previewFeatures = ["multiSchema", "relationJoins", "omitApi"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
+  schemas   = ["auth", "public"]
 }
 
-model users {
-  id        String     @id @db.Uuid
-  firstName String?    @db.VarChar
-  lastName  String?    @db.VarChar
-  type      String     @db.VarChar
-  createdAt DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime   @default(now()) @db.Timestamptz(6)
-  deletedAt DateTime?  @db.Timestamptz(6)
-  comments  comments[]
-  reports   reports[]
+model Users {
+  id        String      @unique @id @db.Uuid
+  publicId  String?     @unique @db.VarChar
+  firstName String?     @db.VarChar
+  lastName  String?     @db.VarChar
+  type      UserType
+  createdAt DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime    @default(now()) @db.Timestamptz(6)
+  deletedAt DateTime?   @db.Timestamptz(6)
+  changelog Changelog[]
+  comments  Comments[]
+  reports   Reports[]
+
+  @@schema("public")
 }
 
-model changelog {
-  id         BigInt   @id @default(autoincrement())
-  objectType String?  @db.VarChar
+model Changelog {
+  id         Int                 @id @default(autoincrement())
+  objectType ChangelogObjectType
   objectId   Int?
-  userId     String   @db.Uuid
-  createdAt  DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt  DateTime @default(now()) @db.Timestamptz(6)
+  creatorId  String              @db.VarChar
+  createdAt  DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime            @default(now()) @db.Timestamptz(6)
   oldValue   Json
   newValue   Json
-  objectAttr String   @db.VarChar
+  objectAttr String              @db.VarChar
+  users      Users               @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
 }
 
-model comments {
-  id         Int       @id @default(autoincrement())
-  objectType String    @db.VarChar
+model Comments {
+  id         Int               @id @default(autoincrement())
+  objectType CommentObjectType
   objectId   Int
   content    String
   replyTo    Int?
-  creatorId  String    @db.Uuid
-  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt  DateTime  @default(now()) @db.Timestamptz(6)
-  deletedAt  DateTime? @db.Timestamptz(6)
-  users      users     @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  creatorId  String            @db.VarChar
+  createdAt  DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime          @default(now()) @db.Timestamptz(6)
+  deletedAt  DateTime?         @db.Timestamptz(6)
+  users      Users             @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
 }
 
-model reportTypes {
+model ReportTypes {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar
   group       String    @db.VarChar
@@ -54,30 +64,68 @@ model reportTypes {
   createdAt   DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime  @default(now()) @db.Timestamptz(6)
   deletedAt   DateTime? @db.Timestamptz(6)
-  reports     reports[]
+  reports     Reports[]
+
+  @@schema("public")
 }
 
-model reports {
-  id            Int       @id @default(autoincrement())
-  email         String?   @db.VarChar
-  streetNumber  Int?
-  streetName    String?   @db.VarChar
-  postalCode    String?   @db.VarChar
-  neighborhood  String?   @db.VarChar
-  lat           Float
-  lng           Float
-  location      Json
-  images        Json?     @db.Json
-  status        String    @db.VarChar
-  details       String?
-  reportTypeId  Int
-  assignedTo    String?   @db.VarChar
-  scheduledDate DateTime? @db.Timestamptz(6)
-  creatorId     String?   @db.Uuid
-  createdAt     DateTime? @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime? @default(now()) @db.Timestamptz(6)
-  deletedAt     DateTime? @db.Timestamptz(6)
+model Reports {
+  id           Int         @id @default(autoincrement())
+  email        String?     @db.VarChar
+  streetNumber Int?
+  streetName   String?     @db.VarChar
+  postalCode   String?     @db.VarChar
+  neighborhood String?     @db.VarChar
+  lat          Float
+  lng          Float
+  images       Json?       @db.Json
+  status       String      @db.VarChar
+  details      String?
+  reportTypeId Int
+  creatorId    String?     @db.VarChar
+  createdAt    DateTime?   @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime?   @default(now()) @db.Timestamptz(6)
+  deletedAt    DateTime?   @db.Timestamptz(6)
+  users        Users?      @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+  reportTypes  ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  reportTypes reportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       users?      @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("public")
+}
+
+model Images {
+  id          Int             @id @default(autoincrement())
+  objectType  ImageObjectType
+  objectId    Int
+  url         String          @db.VarChar
+  blurDataUrl String?         @db.VarChar
+  createdAt   DateTime?       @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime?       @default(now()) @db.Timestamptz(6)
+  deletedAt   DateTime?       @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+enum UserType {
+  USER
+  ADMIN
+
+  @@schema("public")
+}
+
+enum CommentObjectType {
+  REPORT
+
+  @@schema("public")
+}
+
+enum ImageObjectType {
+  REPORT
+
+  @@schema("public")
+}
+
+enum ChangelogObjectType {
+  REPORT
+
+  @@schema("public")
 }
