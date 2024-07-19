@@ -38,13 +38,15 @@ export const loader = defineLoader(async ({ request, params }: LoaderFunctionArg
   invariant(params.id, 'Missing report \'id\'')
 
   const caller = createCaller(await createContext_v2(request))
-  const user = await caller.auth.getAuthedUser()
   // const report = await caller.reports.getById({ id: Number(params.id) })
 
-  const report = await clientUtils.reports.getById.ensureData({ id: Number(params.id) })
-  const comments = await clientUtils.comments.getByReportId.ensureData({ objectId: Number(params.id) })
-  // const comments = await caller.comments.getByReportId({ objectId: Number(params.id) })
-  const changelog = await clientUtils.changelog.getByReportId.ensureData({ objectId: Number(params.id) })
+  const [user, report, comments, changelog] = await Promise.all([
+    await caller.auth.getAuthedUser(),
+    await clientUtils.reports.getById.ensureData({ id: Number(params.id) }),
+    await clientUtils.comments.getByReportId.ensureData({ objectId: Number(params.id) }),
+    // const comments = await caller.comments.getByReportId({ objectId: Number(params.id) })
+    await clientUtils.changelog.getByReportId.ensureData({ objectId: Number(params.id) }),
+  ])
 
   // type CommentsList = typeof comments[0] & {
   //   actType: 'comment'
@@ -338,7 +340,7 @@ export const action = defineAction(async ({ params, request }) => {
   }
 
   const caller = createCaller(await createContext_v2(request))
-  await caller.comments.create({
+  caller.comments.create({
     payload: {
       ...submission.value,
       objectId: Number(params.id),

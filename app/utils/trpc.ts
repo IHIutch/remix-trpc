@@ -1,9 +1,14 @@
 import { TRPCError, initTRPC } from '@trpc/server'
 import superjson from 'superjson'
-import type { Session, User } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 import { Prisma } from '@prisma/client'
+import { z } from 'zod'
 import { createClient } from './supabase/supabase.server'
-import { prisma } from './prisma.server'
+import { getErrorMessage } from './functions'
+
+const userMetaData = z.object({
+  publicId: z.string(),
+})
 
 const _user = Prisma.validator<Prisma.UsersDefaultArgs>()({
   omit: {
@@ -11,12 +16,12 @@ const _user = Prisma.validator<Prisma.UsersDefaultArgs>()({
   },
 })
 
-type UserWithoutId = Prisma.UsersGetPayload<typeof _user> & {
-  email: User['email']
-}
+// type UserWithoutId = Prisma.UsersGetPayload<typeof _user> & {
+//   email: User['email']
+// }
 
 interface CreateInnerContextOptions {
-  user?: UserWithoutId | null
+  user?: z.infer<typeof userMetaData> | null
   session?: Session | null
 }
 
@@ -56,26 +61,16 @@ export async function createContext_v2(request: Request) {
     }
   }
 
-  const data = await prisma.users.findUnique({
-    omit: {
-      id: true,
-    },
-    where: {
-      id: user.id,
-    },
-  })
+  const parsed = userMetaData.safeParse(user?.user_metadata)
 
-  if (!data) {
-    return {
-      user: null,
-    }
+  if (!parsed.success) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: getErrorMessage(`Unexpected user metadata:' ${parsed.error}`),
+    })
   }
-
   return {
-    user: {
-      ...data,
-      email: user.email,
-    },
+    user: userMetaData.parse(user?.user_metadata),
   }
 }
 

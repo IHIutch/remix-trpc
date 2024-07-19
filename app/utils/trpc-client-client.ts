@@ -8,6 +8,7 @@ export const trpcClient = trpc.createClient({
   links: [
     loggerLink({
       enabled: () => !isServer,
+      // enabled: () => true,
     }),
     httpBatchLink({
       transformer: SuperJSON,

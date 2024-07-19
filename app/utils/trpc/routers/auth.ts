@@ -1,13 +1,16 @@
+import { prisma } from '#/utils/prisma.server'
 import { publicProcedure, router } from '#/utils/trpc'
 
 export const authRouter = router({
   getAuthedUser: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.user) {
+    if (!ctx.user?.publicId) {
       return null
     }
 
-    return {
-      ...ctx.user,
-    }
+    return await prisma.users.findUnique({
+      where: {
+        publicId: ctx.user.publicId,
+      },
+    })
   }),
 })
