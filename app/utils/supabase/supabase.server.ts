@@ -7,7 +7,7 @@ export function createClient(request: Request) {
   const supabaseClient = createServerClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
-        return parseCookieHeader(request.headers.get('Cookie') ?? '')
+        return parseCookieHeader(request?.headers.get('Cookie') ?? '')
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) =>

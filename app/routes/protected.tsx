@@ -1,28 +1,27 @@
 import {
   unstable_defineLoader as defineLoader,
   json,
-  redirect,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { createClient } from '#/utils/supabase/supabase.server'
-import { trpcClient } from '#/utils/trpc-client'
+import { createCaller } from '#/utils/caller-factory'
+import { createContext_v2 } from '#/utils/trpc'
 
 export const loader = defineLoader(async ({ request }) => {
-  const { supabaseClient } = createClient(request)
+  // const { supabaseClient } = createClient(request)
 
-  const isLogged = await supabaseClient.auth.getUser()
+  // const isLogged = await supabaseClient.auth.getUser()
 
-  if (!isLogged?.data?.user?.id) {
-    return redirect('/sign-in')
-  }
+  // if (!isLogged?.data?.user?.id) {
+  //   return redirect('/sign-in')
+  // }
 
-  const user = await trpcClient(request).auth.getAuthedUser.query()
+  // const user = await trpcClient(request).auth.getAuthedUser.query()
+
+  const caller = createCaller(await createContext_v2(request))
+  const user = await caller.auth.getAuthedUser()
 
   return json({
-    user: {
-      ...user,
-      email: isLogged.data.user.email,
-    },
+    user,
   })
 })
 

@@ -1,11 +1,23 @@
 import { TRPCError, initTRPC } from '@trpc/server'
-import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import superjson from 'superjson'
-import type { User } from '@supabase/supabase-js'
+import type { Session, User } from '@supabase/supabase-js'
+import { Prisma } from '@prisma/client'
 import { createClient } from './supabase/supabase.server'
+import { prisma } from './prisma.server'
+
+const _user = Prisma.validator<Prisma.UsersDefaultArgs>()({
+  omit: {
+    id: true,
+  },
+})
+
+type UserWithoutId = Prisma.UsersGetPayload<typeof _user> & {
+  email: User['email']
+}
 
 interface CreateInnerContextOptions {
-  user?: User | null
+  user?: UserWithoutId | null
+  session?: Session | null
 }
 
 export async function createContextInner(opts: CreateInnerContextOptions) {
@@ -14,20 +26,56 @@ export async function createContextInner(opts: CreateInnerContextOptions) {
   }
 }
 
-export async function createContext(ctx: FetchCreateContextFnOptions) {
-  const { supabaseClient } = createClient(ctx.req)
+// export async function createContext(ctx: FetchCreateContextFnOptions) {
+//   const { supabaseClient } = createClient(ctx.req)
+
+//   const {
+//     data: { user },
+//   } = await supabaseClient.auth.getUser()
+
+//   const contextInner = await createContextInner({
+//     user,
+//   })
+
+//   return {
+//     ...contextInner,
+//     ...ctx,
+//   }
+// }
+
+export async function createContext_v2(request: Request) {
+  const { supabaseClient } = createClient(request)
 
   const {
     data: { user },
   } = await supabaseClient.auth.getUser()
 
-  const contextInner = await createContextInner({
-    user,
+  if (!user) {
+    return {
+      user: null,
+    }
+  }
+
+  const data = await prisma.users.findUnique({
+    omit: {
+      id: true,
+    },
+    where: {
+      id: user.id,
+    },
   })
 
+  if (!data) {
+    return {
+      user: null,
+    }
+  }
+
   return {
-    ...contextInner,
-    ...ctx,
+    user: {
+      ...data,
+      email: user.email,
+    },
   }
 }
 

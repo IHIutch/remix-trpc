@@ -1,18 +1,18 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema", "relationJoins", "omitApi"]
+  previewFeatures = ["relationJoins", "omitApi"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
-  schemas   = ["auth", "public"]
+  // schemas   = ["auth", "public"]
 }
 
 model Users {
   id        String      @unique @id @db.Uuid
-  publicId  String?     @unique @db.VarChar
+  publicId  String      @unique @db.VarChar
   firstName String?     @db.VarChar
   lastName  String?     @db.VarChar
   type      UserType
@@ -23,7 +23,7 @@ model Users {
   comments  Comments[]
   reports   Reports[]
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 model Changelog {
@@ -38,7 +38,7 @@ model Changelog {
   objectAttr String              @db.VarChar
   users      Users               @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 model Comments {
@@ -53,7 +53,7 @@ model Comments {
   deletedAt  DateTime?         @db.Timestamptz(6)
   users      Users             @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 model ReportTypes {
@@ -66,7 +66,7 @@ model ReportTypes {
   deletedAt   DateTime? @db.Timestamptz(6)
   reports     Reports[]
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 model Reports {
@@ -89,7 +89,7 @@ model Reports {
   users        Users?      @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
   reportTypes  ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 model Images {
@@ -102,30 +102,30 @@ model Images {
   updatedAt   DateTime?       @default(now()) @db.Timestamptz(6)
   deletedAt   DateTime?       @db.Timestamptz(6)
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 enum UserType {
   USER
   ADMIN
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 enum CommentObjectType {
   REPORT
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 enum ImageObjectType {
   REPORT
 
-  @@schema("public")
+  // @@schema("public")
 }
 
 enum ChangelogObjectType {
   REPORT
 
-  @@schema("public")
+  // @@schema("public")
 }

@@ -1,12 +1,13 @@
 import { createTRPCReact, httpBatchLink, loggerLink } from '@trpc/react-query'
 import SuperJSON from 'superjson'
+import { isServer } from '@tanstack/react-query'
 import type { AppRouter } from './trpc/routers'
 
 export const trpc = createTRPCReact<AppRouter>()
-export const trpcClientInit = trpc.createClient({
+export const trpcClient = trpc.createClient({
   links: [
     loggerLink({
-      enabled: () => true,
+      enabled: () => !isServer,
     }),
     httpBatchLink({
       transformer: SuperJSON,

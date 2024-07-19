@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Navbar from './components/navbar'
-import { trpc, trpcClientInit } from './utils/trpc-client-client'
+import { trpc, trpcClient } from './utils/trpc-client-client'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,10 +35,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const [queryClient] = useState(() => new QueryClient())
-  const [trpcClient] = useState(() => trpcClientInit)
+  const [trpcClientInit] = useState(() => trpcClient)
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+    <trpc.Provider client={trpcClientInit} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <Outlet />
         <ReactQueryDevtools initialIsOpen={false} />

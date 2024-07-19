@@ -14,17 +14,17 @@ export default function Navbar() {
 
   const navItemsRight = [
     {
-      name: 'Sign In',
-      href: '/sign-in',
+      name: 'Log In',
+      href: '/log-in',
     },
     {
-      name: 'Register',
-      href: '/register',
+      name: 'Sign Up',
+      href: '/sign-up',
     },
   ]
 
   return (
-    <div className="fixed inset-0 h-16 bg-white shadow-sm">
+    <div className="fixed inset-0 z-10 h-16 bg-white shadow-sm">
       <div className="mx-auto flex size-full max-w-screen-xl items-center px-4">
         <div className="flex w-full items-center">
           <div>

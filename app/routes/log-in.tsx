@@ -17,12 +17,12 @@ const schema = z.object({
 })
 
 export default function SignIn() {
-  const response = useActionData<typeof action>()
+  const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
 
   const [form, fields] = useForm({
     // Sync the result of last submission
-    lastResult: navigation.state === 'idle' ? response?.errors : null,
+    lastResult: navigation.state === 'idle' ? actionData?.errors : null,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema })
     },
@@ -50,7 +50,7 @@ export default function SignIn() {
             Forgot Password?
           </Link>
           <button type="submit">
-            Sign In
+            Log In
           </button>
         </div>
         <div>

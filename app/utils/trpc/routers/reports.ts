@@ -23,6 +23,9 @@ export const reportsRouter = router({
       where: {
         id,
       },
+      include: {
+        reportTypes: true,
+      },
     })
   }),
 })
