@@ -38,12 +38,12 @@ export default function SignIn() {
         <div>
           <label className="block" htmlFor={fields.email.id}>Email</label>
           <input {...getInputProps(fields.email, { type: 'email' })} required />
-          {fields.email.errors ? <p>{fields.email.errors}</p> : null}
+          {fields.email.errors ? <p id={fields.email.descriptionId}>{fields.email.errors}</p> : null}
         </div>
         <div>
           <label className="block" htmlFor={fields.password.id}>Password</label>
           <input {...getInputProps(fields.password, { type: 'password' })} required />
-          {fields.password.errors ? <p>{fields.password.errors}</p> : null}
+          {fields.password.errors ? <p id={fields.password.descriptionId}>{fields.password.errors}</p> : null}
         </div>
         <div className="flex items-center justify-between">
           <Link to="/forgot">
@@ -54,13 +54,7 @@ export default function SignIn() {
           </button>
         </div>
         <div>
-          {form.errors
-            ? (
-                <div>
-                  <p id={form.errorId}>{form.errors}</p>
-                </div>
-              )
-            : null}
+          {form.errors ? (<p id={form.errorId}>{form.errors}</p>) : null}
         </div>
       </Form>
     </div>

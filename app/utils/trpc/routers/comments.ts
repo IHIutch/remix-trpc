@@ -41,7 +41,7 @@ export const commentsRouter = router({
     return await prisma.comments.create({
       data: {
         ...payload,
-        creatorId: ctx.user.publicId,
+        creatorId: ctx.user.id,
       },
       include: {
         users: true,

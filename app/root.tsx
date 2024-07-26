@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Navbar from './components/navbar'
-import { trpc, trpcClient } from './utils/trpc-client-client'
+import { trpc, trpcClient } from './utils/trpc-client'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

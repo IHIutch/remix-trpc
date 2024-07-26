@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Users {
-  id        String      @unique @id @db.Uuid
+  id        String      @id @unique @db.Uuid
   publicId  String      @unique @db.VarChar
   firstName String?     @db.VarChar
   lastName  String?     @db.VarChar
@@ -30,13 +30,13 @@ model Changelog {
   id         Int                 @id @default(autoincrement())
   objectType ChangelogObjectType
   objectId   Int?
-  creatorId  String              @db.VarChar
+  creatorId  String              @db.Uuid
   createdAt  DateTime            @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime            @default(now()) @db.Timestamptz(6)
   oldValue   Json
   newValue   Json
   objectAttr String              @db.VarChar
-  users      Users               @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+  users      Users               @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   // @@schema("public")
 }
@@ -47,11 +47,11 @@ model Comments {
   objectId   Int
   content    String
   replyTo    Int?
-  creatorId  String            @db.VarChar
+  creatorId  String            @db.Uuid
   createdAt  DateTime          @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime          @default(now()) @db.Timestamptz(6)
   deletedAt  DateTime?         @db.Timestamptz(6)
-  users      Users             @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+  users      Users             @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   // @@schema("public")
 }
@@ -82,11 +82,11 @@ model Reports {
   status       String      @db.VarChar
   details      String?
   reportTypeId Int
-  creatorId    String?     @db.VarChar
+  creatorId    String?     @db.Uuid
   createdAt    DateTime?   @default(now()) @db.Timestamptz(6)
   updatedAt    DateTime?   @default(now()) @db.Timestamptz(6)
   deletedAt    DateTime?   @db.Timestamptz(6)
-  users        Users?      @relation(fields: [creatorId], references: [publicId], onDelete: NoAction, onUpdate: NoAction)
+  users        Users?      @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reportTypes  ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   // @@schema("public")

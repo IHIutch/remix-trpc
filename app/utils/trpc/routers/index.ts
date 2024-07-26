@@ -3,6 +3,7 @@ import { reportsRouter } from './reports'
 import { authRouter } from './auth'
 import { commentsRouter } from './comments'
 import { changelogRouter } from './changelog'
+import { reportTypesRouter } from './report-types'
 import { router } from '#/utils/trpc'
 
 export const appRouter = router({
@@ -10,6 +11,7 @@ export const appRouter = router({
   reports: reportsRouter,
   comments: commentsRouter,
   changelog: changelogRouter,
+  reportTypes: reportTypesRouter,
 })
 
 export type AppRouter = typeof appRouter

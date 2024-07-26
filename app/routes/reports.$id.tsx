@@ -1,9 +1,8 @@
 import * as React from 'react'
-import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/node'
 import {
   unstable_defineAction as defineAction,
   unstable_defineLoader as defineLoader,
-  json,
 } from '@remix-run/node'
 import { Link, useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
 import invariant from 'tiny-invariant'
@@ -12,12 +11,12 @@ import { createTRPCQueryUtils } from '@trpc/react-query'
 import { z } from 'zod'
 import { getFormProps, getTextareaProps, useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
-import { trpcClient } from '#/utils/trpc-client-client'
+import { trpcClient } from '#/utils/trpc-client'
 import { createCaller } from '#/utils/caller-factory'
-import { Icon } from '#/components/icon'
-import { button } from '#/components/button'
-import { createContext_v2 } from '#/utils/trpc'
-import Avatar from '#/components/avatar'
+import { Icon } from '#/components/ui/icon'
+import { button } from '#/components/ui/button'
+import { createContext } from '#/utils/trpc'
+import Avatar from '#/components/ui/avatar'
 import type { RouterOutput } from '#/utils/trpc/routers'
 
 export const meta: MetaFunction = () => {
@@ -34,10 +33,10 @@ const commentSchema = z.object({
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
 
-export const loader = defineLoader(async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = defineLoader(async ({ request, params }) => {
   invariant(params.id, 'Missing report \'id\'')
 
-  const caller = createCaller(await createContext_v2(request))
+  const caller = createCaller(await createContext(request))
   // const report = await caller.reports.getById({ id: Number(params.id) })
 
   const [user, report, comments, changelog] = await Promise.all([
@@ -59,6 +58,10 @@ export const loader = defineLoader(async ({ request, params }: LoaderFunctionArg
   //   ...comments.map(c => ({ actType: 'comment' as const, ...c })),
   //   ...changelog.map(c => ({ actType: 'changelog' as const, ...c })),
   // ].sort((a, b) => new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf())
+
+  if (!report) {
+    throw new Response('Not Found', { status: 404 })
+  }
 
   return { report, user, changelog, comments, reportId: params.id }
 })
@@ -260,6 +263,8 @@ function CommentBox() {
   const formRef = React.useRef<HTMLFormElement>(null)
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
 
+  const [offsetPos, setOffetPos] = React.useState(0)
+
   const [form, fields] = useForm({
     id: 'create-comment',
     // Sync the result of last submission
@@ -269,15 +274,30 @@ function CommentBox() {
     },
   })
 
+  const handleSetOffsetHeight = () => {
+    setOffetPos(window.innerHeight - (inputRef.current?.getBoundingClientRect().top || 0))
+  }
+
+  const handleRestoreOffset = React.useCallback(() => {
+    const top = inputRef.current?.getBoundingClientRect().top || 0
+    const scrollTop = window.scrollY
+    const viewportHeight = window.innerHeight
+    const targetScrollPosition = scrollTop + top - (viewportHeight - offsetPos)
+
+    window.scrollTo({
+      top: targetScrollPosition,
+    })
+  }, [offsetPos])
+
   React.useEffect(() => {
     if (commentFetcher.state === 'submitting') {
       if (inputRef?.current?.value) {
         inputRef.current.value = ''
       }
-      inputRef.current?.scrollIntoView()
+      handleRestoreOffset()
       inputRef.current?.focus()
     }
-  }, [commentFetcher.state, commentFetcher.formData])
+  }, [commentFetcher.state, handleRestoreOffset])
 
   return (
     user
@@ -302,7 +322,7 @@ function CommentBox() {
                 </div>
                 {fields.content.errors ? <p>{fields.content.errors}</p> : null}
                 <div className="ml-auto">
-                  <button type="submit" className={button({ className: 'bg-blue-600 text-white' })}>
+                  <button type="submit" onClick={handleSetOffsetHeight} className={button({ className: 'bg-blue-600 text-white' })}>
                     Submit Comment
                   </button>
                 </div>
@@ -339,7 +359,7 @@ export const action = defineAction(async ({ params, request }) => {
     }
   }
 
-  const caller = createCaller(await createContext_v2(request))
+  const caller = createCaller(await createContext(request))
   caller.comments.create({
     payload: {
       ...submission.value,
@@ -354,8 +374,8 @@ export const action = defineAction(async ({ params, request }) => {
 
   clientUtils.comments.getByReportId.invalidate({ objectId: Number(params.id) }, { refetchType: 'all' })
 
-  return json({
-    result: submission.reply({ resetForm: false }),
+  return {
+    result: submission.reply(),
     status: submission.status,
-  })
+  }
 })

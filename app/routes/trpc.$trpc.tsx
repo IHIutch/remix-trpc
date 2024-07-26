@@ -7,7 +7,7 @@ import {
   unstable_defineLoader as defineLoader,
 } from '@remix-run/node'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { createContext_v2 } from '#/utils/trpc'
+import { createContext } from '#/utils/trpc'
 import { appRouter } from '#/utils/trpc/routers'
 
 function handleRequest(args: LoaderFunctionArgs | ActionFunctionArgs) {
@@ -15,7 +15,7 @@ function handleRequest(args: LoaderFunctionArgs | ActionFunctionArgs) {
     endpoint: '/trpc',
     req: args.request,
     router: appRouter,
-    createContext: async ctx => await createContext_v2(ctx.req),
+    createContext: async ctx => await createContext(ctx.req),
   })
 }
 
