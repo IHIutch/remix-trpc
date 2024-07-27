@@ -4,6 +4,7 @@ const iconVariants = cva({
   variants: {
     variant: {
       'warning-outline-rounded': 'icon-[material-symbols--warning-outline-rounded]',
+      'close-small-outline-rounded': 'icon-[material-symbols--close-small-outline-rounded]',
     },
     size: {
       12: 'size-12',
@@ -11,6 +12,9 @@ const iconVariants = cva({
       8: 'size-8',
       6: 'size-6',
     },
+  },
+  defaultVariants: {
+    size: 8,
   },
 })
 

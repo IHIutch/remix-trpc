@@ -1,4 +1,3 @@
-import path from 'node:path'
 import * as React from 'react'
 import { QueryClient } from '@tanstack/react-query'
 import { createTRPCQueryUtils } from '@trpc/react-query'
@@ -16,27 +15,23 @@ import { z } from 'zod'
 import { nanoid } from 'nanoid'
 import { Button } from '#/components/ui/button'
 import { trpcClient } from '#/utils/trpc-client'
-import { createClient } from '#/utils/supabase/supabase.server'
+import { createClient as createServerClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
 import { createContext } from '#/utils/trpc'
 import { createCaller } from '#/utils/caller-factory'
+import { createClient } from '#/utils/supabase/supabase.client'
+import { env } from '#/env'
+import { Icon } from '#/components/ui/icon'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 const schema = z.object({
   // location: z.object({
   //   lng: z.number().min(1),
   //   lat: z.number().min(1),
   // }),
-  photos: z.array(z.instanceof(File)
-    .refine(file => file.size < MAX_FILE_SIZE),
-  ).refine(
-    files => files.every(file => file.size < MAX_FILE_SIZE),
-    'Photo size must be less than 5MB',
-  ),
+  photos: z.array(z.string()).optional(),
   description: z.string().min(1),
   email: z.string().email().optional(),
 })
@@ -51,17 +46,34 @@ export const loader = defineLoader(async ({ params }) => {
     throw redirect('/create-report')
   }
 
-  return { reportType }
+  return {
+    reportType,
+    env: {
+      PUBLIC_SUPABASE_URL: env.PUBLIC_SUPABASE_URL,
+      PUBLIC_SUPABASE_ANON_KEY: env.PUBLIC_SUPABASE_ANON_KEY,
+    },
+  }
 })
 
+interface PendingImage {
+  preview: string
+  name: string
+}
+
+interface UploadedImage {
+  url: string
+  name: string
+}
+
 export default function CreateReport() {
-  const { reportType } = useLoaderData<typeof loader>()
+  const { reportType, env: { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
 
   const inputRef = React.useRef<HTMLInputElement>(null)
 
-  const [previewPhotos, setPreviewPhotos] = React.useState<File[]>([])
+  const [pendingPhotos, setPendingPhotos] = React.useState<PendingImage[]>([])
+  const [uploadedPhotos, setUploadedPhotos] = React.useState<UploadedImage[]>([])
 
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -72,37 +84,85 @@ export default function CreateReport() {
 
   })
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadFile = async (file: File) => {
+    const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY)
+
+    const fileExt = file.name.split('.').pop()
+    const filePath = `${nanoid()}.${fileExt}`
+    const { data, error } = await supabaseClient.storage
+      .from('buffalo311')
+      .upload(filePath, file)
+
+    if (error) {
+      throw new Error(getErrorMessage(error))
+    }
+
+    const url = supabaseClient.storage.from('buffalo311').getPublicUrl(data.path).data.publicUrl
+    return url
+  }
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (!e.target.files) {
       return
     }
-    const files = [...previewPhotos, ...e.target.files]
-      .filter((file) => {
-        return file.size < MAX_FILE_SIZE // 5MB
-      })
-      .slice(0, 4)
+    const maxImages = 4
+    const maxSizeMB = 5 * 1024 * 1024 // 5MB
 
-    setPreviewPhotos(files)
+    const files = Array.from(e.target.files)
+    const validFiles = files.filter(file => file.size <= maxSizeMB)
+    const nonDuplicateFiles = validFiles.filter(file => !uploadedPhotos.some(image => image.name === file.name))
 
-    const dt = new DataTransfer()
-    files.forEach(t => dt.items.add(t))
-    if (inputRef.current) {
-      inputRef.current.files = dt.files
+    const newFiles = nonDuplicateFiles.slice(0, maxImages - uploadedPhotos.length)
+    if (newFiles.length === 0) {
+      return
     }
+
+    const imagePreviews = newFiles.map(file => ({
+      preview: URL.createObjectURL(file),
+      name: file.name,
+    }))
+
+    setPendingPhotos(prev => [...prev, ...imagePreviews])
+
+    newFiles.forEach(async (file) => {
+      try {
+        const uploadedImageUrl = await uploadFile(file)
+        setUploadedPhotos(prev => [
+          ...prev,
+          {
+            url: uploadedImageUrl,
+            name: file.name,
+          },
+        ])
+      }
+      catch (error) {
+        setPendingPhotos(prev => prev.filter((image) => {
+          const existing = imagePreviews.find(i => i.name === image.name)
+          return !!existing
+        }))
+        console.error('Error uploading image:', error)
+      }
+    })
+
+    // const newFiles = [...e.target.files]
+    // newFiles.forEach((i) => {
+    //   form.insert({
+    //     name: fields.photos.name,
+    //     defaultValue: null,
+    //   })
+    // })
+
+    // const dt = new DataTransfer()
+    // files.forEach(t => dt.items.add(t))
+    // if (inputRef.current) {
+    //   inputRef.current.files = dt.files
+    // }
   }
 
-  const handleRemovePhoto = (idx: number) => {
-    const files = [...previewPhotos]
-    files.splice(idx, 1)
-    setPreviewPhotos(files)
-
-    const dt = new DataTransfer()
-    files.forEach(t => dt.items.add(t))
-
-    if (inputRef.current) {
-      inputRef.current.files = dt.files
-    }
+  const handleRemoveImage = (name: string) => {
+    setPendingPhotos(prev => prev.filter(image => image.name !== name))
+    setUploadedPhotos(prev => prev.filter(image => image.name !== name))
   }
 
   return (
@@ -125,31 +185,62 @@ export default function CreateReport() {
           <div></div>
           <div>
             <div className="grid grid-cols-3 gap-2">
-              {previewPhotos?.length > 0
-                ? previewPhotos.map((photo, idx) => (
-                  <div key={photo.name} className="relative aspect-square w-full overflow-hidden rounded">
-                    <Button type="button" onClick={() => handleRemovePhoto(idx)} className="absolute right-4 top-4">{idx}</Button>
-                    <img key={photo.name} src={URL.createObjectURL(photo)} alt="" className="size-full object-cover" />
-                  </div>
-                ))
+              {pendingPhotos?.length > 0
+                ? pendingPhotos.map((photo) => {
+                  const found = uploadedPhotos.find(
+                    u => u.name === photo.name,
+                  )
+                  return (
+                    <div key={photo.name} className="relative aspect-square w-full overflow-hidden">
+                      <button type="button" onClick={() => handleRemoveImage(photo.name)} className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/70">
+                        <Icon className="text-white" variant="close-small-outline-rounded" />
+                      </button>
+                      {/* {found
+                        ? ( */}
+                      <div className="absolute inset-0 size-full">
+                        <FadeInImage
+                          className="aspect-square size-full rounded-md border border-slate-300 object-cover"
+                          src={found?.url || photo.preview}
+                          placeholderSrc={photo.preview}
+                          onLoad={() => {
+                            // console.log('loaded', photo)
+                            // setPendingFiles((pendingFiles) => {
+                            //   return pendingFiles.filter(
+                            //     p => p !== pendingFile,
+                            //   )
+                            // })
+                          }}
+                        />
+                      </div>
+                      {/* ) */}
+                      {/* : null} */}
+                      {/* <img src={photo.preview} alt="" className="size-full object-cover opacity-50" /> */}
+                    </div>
+                  )
+                })
                 : null}
-              {previewPhotos?.length < 4
+              {pendingPhotos?.length < 4
                 ? (
-                    <label htmlFor={fields.photos.id} className="flex aspect-square w-full cursor-pointer items-center justify-center rounded bg-slate-100 font-medium hover:bg-slate-200">
+                    <label htmlFor="photo-input" className="flex aspect-square w-full cursor-pointer items-center justify-center rounded bg-slate-100 font-medium hover:bg-slate-200">
                       Add
                     </label>
                   )
                 : null}
             </div>
             <input
-              {...getInputProps(fields.photos, { type: 'file' })}
+              id="photo-input"
+              type="file"
               multiple
               accept="image/*"
               className="sr-only"
               ref={inputRef}
               onChange={onFileChange}
             />
-            {fields.photos.errors ? <p id={fields.photos.descriptionId}>{fields.photos.errors}</p> : null}
+            {uploadedPhotos.length > 0
+              ? uploadedPhotos.map(p => (
+                <input key={p.url} name={fields.photos.name} value={p.url} readOnly hidden />
+              ))
+              : null}
           </div>
           <div>
             <label className="block" htmlFor={fields.description.id}>Description/Details</label>
@@ -175,7 +266,44 @@ export default function CreateReport() {
           <Button type="submit" className="w-full bg-blue-600 text-white">Submit</Button>
         </div>
       </Form>
+
+      {/* <div>
+        <pre>{JSON.stringify(pendingPhotos, null, 2)}</pre>
+        <pre>{JSON.stringify(uploadedPhotos, null, 2)}</pre>
+      </div> */}
     </div>
+  )
+}
+
+function FadeInImage({ src, placeholderSrc, onLoad, ...props }: {
+  src: UploadedImage['url']
+  placeholderSrc?: PendingImage['preview']
+  onLoad?: () => void
+  className?: string
+}) {
+  const [imgSrc, setImgSrc] = React.useState(placeholderSrc || src)
+  const onLoadRef = React.useRef(onLoad)
+  React.useEffect(() => {
+    onLoadRef.current = onLoad
+  }, [onLoad])
+
+  React.useEffect(() => {
+    const img = new Image()
+    img.onload = () => {
+      setImgSrc(src)
+      if (onLoadRef.current) {
+        onLoadRef.current()
+      }
+    }
+    img.src = src
+  }, [src])
+
+  return (
+    <img
+      src={imgSrc}
+      alt=""
+      {...props}
+    />
   )
 }
 
@@ -196,42 +324,7 @@ export const action = defineAction(async ({ request, params }) => {
       status: submission.status,
     }
   }
-  const { supabaseClient, headers } = createClient(request)
-
-  const uploaded = await Promise.all(
-    submission.value.photos.map(async (photo) => {
-      const fileExt = path.extname(photo.name)
-      const filePath = nanoid() + fileExt
-      const { data, error } = await supabaseClient.storage
-        .from('buffalo311')
-        .upload(filePath, photo)
-
-      if (error) {
-        return { success: false, data, error: getErrorMessage(error) }
-      }
-
-      return { success: true, data, error: getErrorMessage(error) }
-    }),
-  )
-
-  const photoSchema = z.object({
-    data: z.object({
-      id: z.string(),
-      path: z.string(),
-      fullPath: z.string(),
-    }),
-  }).array()
-
-  const parsedPhotos = photoSchema.safeParse(uploaded)
-  if (!parsedPhotos.success) {
-    const uploadError = uploaded.find(u => u.error)?.error
-    return {
-      result: submission.reply({
-        formErrors: [getErrorMessage(uploadError)],
-      }),
-      status: 'error',
-    }
-  }
+  const { headers } = createServerClient(request)
 
   const caller = createCaller(await createContext(request))
   const report = await caller.reports.create({
@@ -241,7 +334,7 @@ export const action = defineAction(async ({ request, params }) => {
       reportTypeId: reportType?.id,
       lat: 123,
       lng: 123,
-      photos: parsedPhotos.data.map(u => ({ url: u.data.path })),
+      photos: submission.value.photos?.map(p => ({ url: p })),
     },
   })
 
