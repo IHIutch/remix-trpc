@@ -1,17 +1,15 @@
-import process from 'node:process'
 import { vitePlugin as remix } from '@remix-run/dev'
 import { installGlobals } from '@remix-run/node'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { vercelPreset } from '@vercel/remix/vite'
 
 installGlobals({ nativeFetch: true })
 
 export default defineConfig({
-  server: {
-    port: Number(process.env.PORT) || 3000,
-  },
   plugins: [
     remix({
+      presets: [vercelPreset()],
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
