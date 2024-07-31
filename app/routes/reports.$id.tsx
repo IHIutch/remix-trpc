@@ -1,17 +1,18 @@
 import * as React from 'react'
 import type { MetaFunction } from '@remix-run/node'
 import {
+  defer,
   unstable_defineAction as defineAction,
   unstable_defineLoader as defineLoader,
 } from '@remix-run/node'
-import { Link, useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
+import { Await, Link, useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
 import invariant from 'tiny-invariant'
 import { QueryClient } from '@tanstack/react-query'
 import { createTRPCQueryUtils } from '@trpc/react-query'
 import { z } from 'zod'
 import { getFormProps, getTextareaProps, useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
-import { trpcClient } from '#/utils/trpc-client'
+import { trpcServerClient } from '#/utils/trpc-client.server'
 import { createCaller } from '#/utils/caller-factory'
 import { Icon } from '#/components/ui/icon'
 import { button } from '#/components/ui/button'
@@ -31,43 +32,32 @@ const commentSchema = z.object({
 })
 
 const queryClient = new QueryClient()
-const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
+const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
 
 export const loader = defineLoader(async ({ request, params }) => {
   invariant(params.id, 'Missing report \'id\'')
 
   const caller = createCaller(await createContext(request))
-  // const report = await caller.reports.getById({ id: Number(params.id) })
 
-  const [user, report, comments, changelog] = await Promise.all([
-    await caller.auth.getAuthedUser(),
-    await clientUtils.reports.getById.ensureData({ id: Number(params.id) }),
-    await clientUtils.comments.getByReportId.ensureData({ objectId: Number(params.id) }),
-    // const comments = await caller.comments.getByReportId({ objectId: Number(params.id) })
-    await clientUtils.changelog.getByReportId.ensureData({ objectId: Number(params.id) }),
-  ])
-
-  // type CommentsList = typeof comments[0] & {
-  //   actType: 'comment'
-  // }
-  // type ChangelogList = typeof changelog[0] & {
-  //   actType: 'changelog'
-  // }
-
-  // const activities: (CommentsList | ChangelogList)[] = [
-  //   ...comments.map(c => ({ actType: 'comment' as const, ...c })),
-  //   ...changelog.map(c => ({ actType: 'changelog' as const, ...c })),
-  // ].sort((a, b) => new Date(a.createdAt).valueOf() - new Date(b.createdAt).valueOf())
+  const comments = clientUtils.comments.getByReportId.ensureData({ objectId: Number(params.id) })
+  const changelog = clientUtils.changelog.getByReportId.ensureData({ objectId: Number(params.id) })
+  const report = await clientUtils.reports.getById.ensureData({ id: Number(params.id) })
+  const user = await caller.auth.getAuthedUser()
 
   if (!report) {
     throw new Response('Not Found', { status: 404 })
   }
-
-  return { report, user, changelog, comments, reportId: params.id }
+  return defer({
+    report,
+    user,
+    changelog,
+    comments,
+    reportId: params.id,
+  })
 })
 
 export default function Index() {
-  const { report } = useLoaderData<typeof loader>()
+  const { report, comments, changelog } = useLoaderData<typeof loader>()
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-12">
@@ -157,7 +147,11 @@ export default function Index() {
             Activity
           </h2>
           <div>
-            <ActivityList />
+            <React.Suspense fallback={null}>
+              <Await resolve={Promise.all([comments, changelog])}>
+                {([comments, changelog]) => <ActivityList comments={comments} changelog={changelog} />}
+              </Await>
+            </React.Suspense>
           </div>
           <div className="border-t-2 pt-6">
             <CommentBox />
@@ -169,8 +163,11 @@ export default function Index() {
   )
 }
 
-function ActivityList() {
-  const { changelog, comments, user, reportId } = useLoaderData<typeof loader>()
+function ActivityList({ changelog, comments }: {
+  changelog: RouterOutput['changelog']['getByReportId']
+  comments: RouterOutput['comments']['getByReportId']
+}) {
+  const { user, reportId } = useLoaderData<typeof loader>()
 
   const mergeActivities = ({ changelog, comments }: {
     changelog: RouterOutput['changelog']['getByReportId']

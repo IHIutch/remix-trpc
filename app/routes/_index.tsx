@@ -6,7 +6,8 @@ import { Link, useLoaderData } from '@remix-run/react'
 import dayjs from 'dayjs'
 import { createTRPCQueryUtils } from '@trpc/react-query'
 import { QueryClient } from '@tanstack/react-query'
-import { trpc, trpcClient } from '#/utils/trpc-client'
+import { trpcServerClient } from '#/utils/trpc-client.server'
+import { trpc } from '#/utils/trpc-client'
 
 export const meta: MetaFunction = () => {
   return [
@@ -15,7 +16,7 @@ export const meta: MetaFunction = () => {
 }
 
 const queryClient = new QueryClient()
-const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
+const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
 
 export const loader = defineLoader(async () => {
   // const caller = createCaller({})

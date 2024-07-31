@@ -14,7 +14,7 @@ import { parseWithZod } from '@conform-to/zod'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
 import { Button } from '#/components/ui/button'
-import { trpcClient } from '#/utils/trpc-client'
+import { trpcServerClient } from '#/utils/trpc-client.server'
 import { createClient as createServerClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage, resizeImage } from '#/utils/functions'
 import { createContext } from '#/utils/trpc'
@@ -24,7 +24,7 @@ import { env } from '#/env.server'
 import { Icon } from '#/components/ui/icon'
 
 const queryClient = new QueryClient()
-const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
+const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
 
 const schema = z.object({
   // location: z.object({
@@ -66,7 +66,7 @@ interface UploadedImage {
 }
 
 export default function CreateReport() {
-  const { reportType, env: { SUPABASE_URL, SUPABASE_ANON_KEY } } = useLoaderData<typeof loader>()
+  const { reportType } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
 
@@ -85,7 +85,7 @@ export default function CreateReport() {
   })
 
   const uploadFile = async (file: File) => {
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    const supabaseClient = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_URL)
 
     const fileExt = file.name.split('.').pop()
     const filePath = `${nanoid()}.${fileExt}`

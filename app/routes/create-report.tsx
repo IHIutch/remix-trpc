@@ -6,10 +6,10 @@ import {
 import { Link, useLoaderData } from '@remix-run/react'
 import * as React from 'react'
 import slugify from 'slugify'
-import { trpcClient } from '#/utils/trpc-client'
+import { trpcServerClient } from '#/utils/trpc-client.server'
 
 const queryClient = new QueryClient()
-const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcClient })
+const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
 
 export const loader = defineLoader(async () => {
   const reportTypes = await clientUtils.reportTypes.getAll.ensureData()
