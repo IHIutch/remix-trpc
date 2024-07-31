@@ -12,7 +12,8 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "prisma": "prisma",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@conform-to/react": "^1.1.5",
