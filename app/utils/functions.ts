@@ -1,5 +1,4 @@
 import Compressor from 'compressorjs'
-import { env } from '#/env.server'
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error)
@@ -31,8 +30,4 @@ export async function resizeImage(file: File): Promise<File> {
       error: reject,
     })
   })
-}
-
-export function getBaseUrl() {
-  return env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:5173'
 }

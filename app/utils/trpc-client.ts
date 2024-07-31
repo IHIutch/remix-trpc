@@ -2,7 +2,9 @@ import { createTRPCReact, httpBatchLink, loggerLink } from '@trpc/react-query'
 import SuperJSON from 'superjson'
 import { isServer } from '@tanstack/react-query'
 import type { AppRouter } from './trpc/routers'
-import { getBaseUrl } from './functions'
+import { env } from '#/env.server'
+
+const baseUrl = env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:5173'
 
 export const trpc = createTRPCReact<AppRouter>()
 export const trpcClient = trpc.createClient({
@@ -13,7 +15,7 @@ export const trpcClient = trpc.createClient({
     }),
     httpBatchLink({
       transformer: SuperJSON,
-      url: `${getBaseUrl()}/trpc`,
+      url: `${baseUrl}/trpc`,
       // You can pass any HTTP headers you wish here
       headers: () => {
         // console.log({ opts })
