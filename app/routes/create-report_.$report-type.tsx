@@ -48,7 +48,7 @@ export const loader = defineLoader(async ({ params }) => {
 
   return {
     reportType,
-    env: {
+    ENV: {
       SUPABASE_URL: env.SUPABASE_URL,
       SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY,
     },
@@ -66,7 +66,7 @@ interface UploadedImage {
 }
 
 export default function CreateReport() {
-  const { reportType } = useLoaderData<typeof loader>()
+  const { reportType, ENV } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
 
@@ -85,7 +85,7 @@ export default function CreateReport() {
   })
 
   const uploadFile = async (file: File) => {
-    const supabaseClient = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_URL)
+    const supabaseClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY)
 
     const fileExt = file.name.split('.').pop()
     const filePath = `${nanoid()}.${fileExt}`
