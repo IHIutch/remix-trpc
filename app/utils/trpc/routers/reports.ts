@@ -55,8 +55,8 @@ export const reportsRouter = router({
         },
       })
 
-      if (payload.photos) {
-        tx.images.createMany({
+      if (payload.photos && payload.photos.length > 0) {
+        await tx.images.createMany({
           data: payload.photos?.map(p => ({
             objectType: 'REPORT',
             objectId: report.id,

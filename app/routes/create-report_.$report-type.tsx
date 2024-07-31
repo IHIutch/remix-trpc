@@ -13,10 +13,11 @@ import { getFormProps, getInputProps, getTextareaProps, useForm } from '@conform
 import { parseWithZod } from '@conform-to/zod'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
+import clsx from 'clsx'
 import { Button } from '#/components/ui/button'
 import { trpcClient } from '#/utils/trpc-client'
 import { createClient as createServerClient } from '#/utils/supabase/supabase.server'
-import { getErrorMessage } from '#/utils/functions'
+import { getErrorMessage, resizeImage } from '#/utils/functions'
 import { createContext } from '#/utils/trpc'
 import { createCaller } from '#/utils/caller-factory'
 import { createClient } from '#/utils/supabase/supabase.client'
@@ -49,8 +50,8 @@ export const loader = defineLoader(async ({ params }) => {
   return {
     reportType,
     env: {
-      PUBLIC_SUPABASE_URL: env.PUBLIC_SUPABASE_URL,
-      PUBLIC_SUPABASE_ANON_KEY: env.PUBLIC_SUPABASE_ANON_KEY,
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_ANON_KEY: env.SUPABASE_ANON_KEY,
     },
   }
 })
@@ -66,7 +67,7 @@ interface UploadedImage {
 }
 
 export default function CreateReport() {
-  const { reportType, env: { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } } = useLoaderData<typeof loader>()
+  const { reportType, env: { SUPABASE_URL, SUPABASE_ANON_KEY } } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
 
@@ -85,7 +86,7 @@ export default function CreateReport() {
   })
 
   const uploadFile = async (file: File) => {
-    const supabaseClient = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY)
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
     const fileExt = file.name.split('.').pop()
     const filePath = `${nanoid()}.${fileExt}`
@@ -127,7 +128,8 @@ export default function CreateReport() {
 
     newFiles.forEach(async (file) => {
       try {
-        const uploadedImageUrl = await uploadFile(file)
+        const resized = await resizeImage(file)
+        const uploadedImageUrl = await uploadFile(resized)
         setUploadedPhotos(prev => [
           ...prev,
           {
@@ -144,20 +146,6 @@ export default function CreateReport() {
         console.error('Error uploading image:', error)
       }
     })
-
-    // const newFiles = [...e.target.files]
-    // newFiles.forEach((i) => {
-    //   form.insert({
-    //     name: fields.photos.name,
-    //     defaultValue: null,
-    //   })
-    // })
-
-    // const dt = new DataTransfer()
-    // files.forEach(t => dt.items.add(t))
-    // if (inputRef.current) {
-    //   inputRef.current.files = dt.files
-    // }
   }
 
   const handleRemoveImage = (name: string) => {
@@ -195,9 +183,14 @@ export default function CreateReport() {
                       <button type="button" onClick={() => handleRemoveImage(photo.name)} className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/70">
                         <Icon className="text-white" variant="close-small-outline-rounded" />
                       </button>
-                      {/* {found
-                        ? ( */}
                       <div className="absolute inset-0 size-full">
+                        {!found
+                          ? (
+                              <div className="absolute inset-0 flex size-full items-center justify-center bg-white/70 text-blue-700">
+                                <span className="icon-[material-symbols--progress-activity] size-8 animate-spin"></span>
+                              </div>
+                            )
+                          : null}
                         <FadeInImage
                           className="aspect-square size-full rounded-md border border-slate-300 object-cover"
                           src={found?.url || photo.preview}
@@ -212,9 +205,6 @@ export default function CreateReport() {
                           }}
                         />
                       </div>
-                      {/* ) */}
-                      {/* : null} */}
-                      {/* <img src={photo.preview} alt="" className="size-full object-cover opacity-50" /> */}
                     </div>
                   )
                 })
