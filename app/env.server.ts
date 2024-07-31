@@ -15,6 +15,7 @@ export const env = createEnv({
     // # Supabase
     SUPABASE_ANON_KEY: z.string().min(1),
     SUPABASE_URL: z.string().min(1).url(),
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1),
   },
   client: {
     // # Misc

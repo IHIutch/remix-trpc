@@ -4,7 +4,7 @@ import { createCallerFactory } from './trpc'
 import { type AppRouter, appRouter } from './trpc/routers'
 import { env } from '#/env.server'
 
-const baseUrl = env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:5173'
+const baseUrl = env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:5173'
 
 export function trpcServerClient() {
   return createTRPCClient<AppRouter>({

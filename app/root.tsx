@@ -4,6 +4,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  json,
+  unstable_defineClientLoader,
+  useLoaderData,
   useRouteError,
 } from '@remix-run/react'
 import './tailwind.css'
@@ -12,6 +15,29 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Navbar from './components/navbar'
 import { trpc, trpcClient } from './utils/trpc-client'
+import { env } from './env.server'
+
+// export const loader = unstable_defineClientLoader(async () => {
+//   console.log([env.VERCEL_URL, env.SUPABASE_URL])
+
+//   return { test: [env.VERCEL_URL, env.SUPABASE_URL] }
+// })
+
+export async function loader() {
+  console.log({
+    VERCEL_URL: env.VERCEL_URL,
+    VERCEL_PROJECT_PRODUCTION_URL: env.VERCEL_PROJECT_PRODUCTION_URL,
+    SUPABASE_URL: env.SUPABASE_URL,
+  })
+
+  return json({
+    ENV: {
+      VERCEL_URL: env.VERCEL_URL,
+      VERCEL_PROJECT_PRODUCTION_URL: env.VERCEL_PROJECT_PRODUCTION_URL,
+      SUPABASE_URL: env.SUPABASE_URL,
+    },
+  })
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,6 +63,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const [queryClient] = useState(() => new QueryClient())
   const [trpcClientInit] = useState(() => trpcClient)
+
+  const { ENV } = useLoaderData<typeof loader>()
+
+  console.log({ ENV })
 
   return (
     <trpc.Provider client={trpcClientInit} queryClient={queryClient}>

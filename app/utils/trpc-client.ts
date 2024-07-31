@@ -14,10 +14,10 @@ export const trpcClient = trpc.createClient({
       transformer: SuperJSON,
       url: `/trpc`,
       // You can pass any HTTP headers you wish here
-      headers: () => {
-        // console.log({ opts })
-        return {}
-      },
+      // headers: () => {
+      // console.log({ opts })
+      // return {}
+      // },
     }),
   ],
 })
