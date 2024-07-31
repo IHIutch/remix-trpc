@@ -11,12 +11,9 @@ export const env = createEnv({
   server: {
     POSTGRES_PRISMA_URL: z.string().url(),
     POSTGRES_URL_NON_POOLING: z.string().url(),
-  },
-  shared: {
     // # Supabase
     SUPABASE_ANON_KEY: z.string().min(1),
-    SUPABASE_URL: z.string().url().min(1),
-    VERCEL_URL: z.string().optional(),
+    SUPABASE_URL: z.string().min(1).url(),
   },
   client: {
     // # Misc
