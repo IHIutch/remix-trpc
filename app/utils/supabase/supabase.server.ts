@@ -4,6 +4,8 @@ import { env } from '#/env'
 export function createClient(request: Request) {
   const headers = new Headers()
 
+  console.log({ env })
+
   const supabaseClient = createServerClient(env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
