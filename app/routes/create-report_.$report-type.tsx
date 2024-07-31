@@ -13,7 +13,6 @@ import { getFormProps, getInputProps, getTextareaProps, useForm } from '@conform
 import { parseWithZod } from '@conform-to/zod'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
-import clsx from 'clsx'
 import { Button } from '#/components/ui/button'
 import { trpcClient } from '#/utils/trpc-client'
 import { createClient as createServerClient } from '#/utils/supabase/supabase.server'
@@ -21,7 +20,7 @@ import { getErrorMessage, resizeImage } from '#/utils/functions'
 import { createContext } from '#/utils/trpc'
 import { createCaller } from '#/utils/caller-factory'
 import { createClient } from '#/utils/supabase/supabase.client'
-import { env } from '#/env'
+import { env } from '#/env.server'
 import { Icon } from '#/components/ui/icon'
 
 const queryClient = new QueryClient()

@@ -1,5 +1,5 @@
 import Compressor from 'compressorjs'
-import { env } from '#/env'
+import { env } from '#/env.server'
 
 export function getErrorMessage(error: unknown) {
   if (error instanceof Error)

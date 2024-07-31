@@ -2,6 +2,7 @@ import process from 'node:process'
 import { createEnv } from '@t3-oss/env-core'
 import type { ZodError } from 'zod'
 import { z } from 'zod'
+import { vercel } from '@t3-oss/env-core/presets'
 
 export const env = createEnv({
   emptyStringAsUndefined: true,
@@ -21,6 +22,7 @@ export const env = createEnv({
     // # Sentry
     // PUBLIC_SENTRY_DSN: z.string().min(1),
   },
+  extends: [vercel()],
   runtimeEnv: process.env,
   onValidationError: (error: ZodError) => {
     console.error(
