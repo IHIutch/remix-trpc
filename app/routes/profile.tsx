@@ -25,7 +25,7 @@ export const loader = defineLoader(async ({ request }) => {
   })
 })
 
-export default function Protected() {
+export default function Profile() {
   const { user } = useLoaderData<typeof loader>()
 
   return (

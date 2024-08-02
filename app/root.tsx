@@ -1,17 +1,31 @@
+import * as React from 'react'
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
   useRouteError,
 } from '@remix-run/react'
 import './tailwind.css'
-import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { unstable_defineLoader as definLoader } from '@remix-run/node'
+import { RouterProvider } from 'react-aria-components'
 import Navbar from './components/navbar'
 import { trpc, trpcClient } from './utils/trpc-client'
+import { createCaller } from './utils/trpc-client.server'
+import { createContext } from './utils/trpc'
+
+export const loader = definLoader(async ({ request }) => {
+  const caller = createCaller(await createContext(request))
+  const user = await caller.auth.getAuthedUser()
+
+  return {
+    user,
+  }
+})
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,13 +49,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const [queryClient] = useState(() => new QueryClient())
-  const [trpcClientInit] = useState(() => trpcClient)
+  const [queryClient] = React.useState(() => new QueryClient())
+  const [trpcClientInit] = React.useState(() => trpcClient)
+  const navigate = useNavigate()
 
   return (
     <trpc.Provider client={trpcClientInit} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <Outlet />
+        <RouterProvider navigate={navigate}>
+          <Outlet />
+        </RouterProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </trpc.Provider>

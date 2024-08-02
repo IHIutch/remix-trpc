@@ -1,18 +1,20 @@
 import { type VariantProps, cva, cx } from 'cva'
+import * as ReactAria from 'react-aria-components'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const button = cva({
   base: [
     'inline-flex items-center justify-center rounded-md font-medium outline-none transition-colors',
     // Focus
-    // 'focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900',
+    'focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 dark:focus:ring-blue-300',
     // Disabled
-    // 'disabled:pointer-events-none disabled:opacity-40',
+    'disabled:pointer-events-none disabled:opacity-40 aria-disabled:opacity-40',
   ],
   variants: {
-    // variant: {
-    //   solid:
-    //     'bg-slate-900 text-white open:bg-slate-100 hover:bg-slate-700 dark:bg-slate-50 dark:text-slate-900 dark:open:bg-slate-800 dark:hover:bg-slate-200',
-    // },
+    colorScheme: {
+      blue:
+        'bg-blue-600 text-white open:bg-blue-600 hover:bg-blue-800 dark:bg-blue-300 dark:text-black dark:open:bg-blue-300 dark:hover:bg-blue-200',
+    },
     size: {
       lg: 'h-12 px-6 text-lg',
       md: 'h-10 px-4 text-base',
@@ -21,30 +23,28 @@ export const button = cva({
     },
   },
   defaultVariants: {
-    // variant: 'solid',
+    colorScheme: 'blue',
     size: 'md',
   },
 })
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends ReactAria.ButtonProps,
   VariantProps<typeof button> {
   className?: string
 }
 
 export function Button({
   className,
-  // variant,
+  colorScheme,
   size,
-  type = 'button',
   ...props
 }: ButtonProps) {
   return (
-    <button
-      type={type}
+    <ReactAria.Button
       className={cx(
         button({
-        //   variant,
+          colorScheme,
           size,
           className,
         }),

@@ -10,6 +10,7 @@ import { parseWithZod } from '@conform-to/zod'
 import { getFormProps, getInputProps, useForm } from '@conform-to/react'
 import { createClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
+import { Button } from '#/components/ui/button'
 
 const schema = z.object({
   email: z.string().min(1),
@@ -49,9 +50,9 @@ export default function SignIn() {
           <Link to="/forgot">
             Forgot Password?
           </Link>
-          <button type="submit">
+          <Button type="submit">
             Log In
-          </button>
+          </Button>
         </div>
         <div>
           {form.errors ? (<p id={form.errorId}>{form.errors}</p>) : null}

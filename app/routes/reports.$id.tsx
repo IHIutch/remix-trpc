@@ -15,7 +15,7 @@ import { parseWithZod } from '@conform-to/zod'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { createCaller } from '#/utils/caller-factory'
 import { Icon } from '#/components/ui/icon'
-import { button } from '#/components/ui/button'
+import { Button, button } from '#/components/ui/button'
 import { createContext } from '#/utils/trpc'
 import Avatar from '#/components/ui/avatar'
 import type { RouterOutput } from '#/utils/trpc/routers'
@@ -331,9 +331,9 @@ function CommentBox() {
                 </div>
                 {fields.content.errors ? <p>{fields.content.errors}</p> : null}
                 <div className="ml-auto">
-                  <button type="submit" onClick={handleSetOffsetHeight} className={button({ className: 'bg-blue-600 text-white' })}>
+                  <Button type="submit" onPress={handleSetOffsetHeight}>
                     Submit Comment
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div>

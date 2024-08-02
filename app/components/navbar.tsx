@@ -1,6 +1,12 @@
 import { Link } from '@remix-run/react'
+import * as ReactAria from 'react-aria-components'
+import Avatar from './ui/avatar'
+import { Menu, MenuContent, MenuItem } from './ui/dropdown'
+import { button } from './ui/button'
+import { useUser } from '#/utils/functions/user'
 
 export default function Navbar() {
+  const user = useUser()
   const navItemsLeft = [
     {
       name: 'Reports',
@@ -42,26 +48,36 @@ export default function Navbar() {
               ))}
             </div>
             <div className="ml-auto flex items-center gap-6">
-              {navItemsRight.map(link => (
-                <Link
-                  to={link.href}
-                  key={link.href}
-                  className="hidden md:inline"
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <CreateReportButton />
+              {user
+                ? null
+                : navItemsRight.map(link => (
+                  <Link
+                    to={link.href}
+                    key={link.href}
+                    className="hidden md:inline"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              <Link to="/create-report" className={button()}>Create Report</Link>
+              {user
+                ? (
+                    <Menu>
+                      <ReactAria.Button>
+                        <Avatar name={`${user.firstName} ${user.lastName}`} />
+                      </ReactAria.Button>
+                      <MenuContent placement="bottom end">
+                        <MenuItem href="/profile">My Reports</MenuItem>
+                        <MenuItem href="/settings">Settings</MenuItem>
+                        <MenuItem id="logout">Log Out</MenuItem>
+                      </MenuContent>
+                    </Menu>
+                  )
+                : null}
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-function CreateReportButton() {
-  return (
-    <Link to="/create-report" className="flex h-10 items-center rounded-md bg-blue-600 px-4 font-medium text-white">Create Report</Link>
   )
 }

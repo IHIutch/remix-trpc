@@ -8,6 +8,7 @@ import { createTRPCQueryUtils } from '@trpc/react-query'
 import { QueryClient } from '@tanstack/react-query'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { trpc } from '#/utils/trpc-client'
+import { Button } from '#/components/ui/button'
 
 export const meta: MetaFunction = () => {
   return [
@@ -38,7 +39,7 @@ export default function Index() {
     <div className="flex h-full flex-col">
       <div className="flex border-b px-4 py-2">
         <div className="ml-auto">
-          <button type="button" className="h-8 rounded-md border px-2 text-sm font-medium">Filters</button>
+          <Button size="sm">Filters</Button>
         </div>
       </div>
       <div className="grid grow grid-cols-2 overflow-hidden">

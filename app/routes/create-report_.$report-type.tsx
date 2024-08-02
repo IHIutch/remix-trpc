@@ -13,7 +13,7 @@ import { getFormProps, getInputProps, getTextareaProps, useForm } from '@conform
 import { parseWithZod } from '@conform-to/zod'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
-import { Button } from '#/components/ui/button'
+import * as ReactAria from 'react-aria-components'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { createClient as createServerClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage, resizeImage } from '#/utils/functions'
@@ -23,6 +23,7 @@ import { createClient } from '#/utils/supabase/supabase.client'
 import { env } from '#/env.server'
 import { Icon } from '#/components/ui/icon'
 import { getImageData } from '#/utils/functions/get-image-data.server'
+import { Button } from '#/components/ui/button'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
@@ -180,9 +181,9 @@ export default function CreateReport() {
                   )
                   return (
                     <div key={photo.name} className="relative aspect-square w-full overflow-hidden">
-                      <button type="button" onClick={() => handleRemoveImage(photo.name)} className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/70">
+                      <ReactAria.Button onPress={() => handleRemoveImage(photo.name)} className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/70">
                         <Icon className="text-white" variant="close-small-outline-rounded" />
-                      </button>
+                      </ReactAria.Button>
                       <div className="absolute inset-0 size-full">
                         {!found
                           ? (

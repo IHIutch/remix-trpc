@@ -11,6 +11,7 @@ import {
 } from '@remix-run/node'
 import { createClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
+import { Button } from '#/components/ui/button'
 
 const schema = z.object({
   email: z.string().min(1),
@@ -60,9 +61,9 @@ export default function SignIn() {
             )
           : null}
         <div>
-          <button type="submit" className="bg-black text-white">
+          <Button type="submit" className="bg-black text-white">
             Sign Up
-          </button>
+          </Button>
         </div>
       </Form>
     </div>

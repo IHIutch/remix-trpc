@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { clsx } from 'clsx'
+import { cx } from '#/utils/cva.config'
 
 const isServer = typeof document === 'undefined'
 
@@ -68,7 +68,7 @@ export function BlurImage({
     'data-evt-onload': isServer
       ? 'this.classList.remove(\'opacity-0\')'
       : undefined,
-    'className': clsx(
+    'className': cx(
       'absolute size-full',
       img.props.className,
       'transition-opacity',
@@ -79,16 +79,16 @@ export function BlurImage({
   })
 
   return (
-    <div className={clsx(className, 'relative')} {...rest}>
+    <div className={cx(className, 'relative')} {...rest}>
       {blurDataUrl
         ? (
             <>
               <img
                 src={blurDataUrl}
-                className={clsx(img.props.className, 'absolute')}
+                className={cx(img.props.className, 'absolute')}
                 alt={img.props.alt}
               />
-              <div className={clsx(img.props.className, 'absolute backdrop-blur-xl')} />
+              <div className={cx(img.props.className, 'absolute backdrop-blur-xl')} />
             </>
           )
         : null}

@@ -18,7 +18,9 @@ const iconVariants = cva({
   },
 })
 
-export interface IconProps extends VariantProps<typeof iconVariants> {
+export interface IconProps
+  extends Omit<VariantProps<typeof iconVariants>, 'variant'>,
+  Required<Pick<VariantProps<typeof iconVariants>, 'variant'>> {
   className?: string
 }
 

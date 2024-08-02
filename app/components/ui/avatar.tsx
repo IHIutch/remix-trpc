@@ -1,4 +1,4 @@
-import React from 'react'
+import { cx } from '#/utils/cva.config'
 
 export default function Avatar({ name, className }: { name?: string, className?: string }) {
   const getInitials = () => {
@@ -12,8 +12,8 @@ export default function Avatar({ name, className }: { name?: string, className?:
   }
 
   return (
-    <div className={`flex size-12 items-center justify-center rounded-full bg-slate-600 text-lg text-white ${className}`}>
-      {getInitials() ? getInitials() : <Fallback />}
+    <div className={cx('flex size-12 items-center justify-center rounded-full bg-slate-600 text-lg text-white', className)}>
+      {getInitials() ?? <Fallback />}
     </div>
   )
 }
