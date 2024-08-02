@@ -52,7 +52,6 @@ model Comments {
   updatedAt  DateTime          @default(now()) @db.Timestamptz(6)
   deletedAt  DateTime?         @db.Timestamptz(6)
   users      Users             @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
   // @@schema("public")
 }
 
@@ -78,7 +77,7 @@ model Reports {
   neighborhood String?     @db.VarChar
   lat          Float
   lng          Float
-  images       Json?       @db.Json
+  z_images     Json?       @db.Json
   status       String      @db.VarChar
   details      String?
   reportTypeId Int
@@ -87,7 +86,8 @@ model Reports {
   updatedAt    DateTime?   @default(now()) @db.Timestamptz(6)
   deletedAt    DateTime?   @db.Timestamptz(6)
   users        Users?      @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reportTypes  ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reportType   ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  images       Images[]    @relation("ReportImage")
 
   // @@schema("public")
 }
@@ -96,12 +96,15 @@ model Images {
   id          Int             @id @default(autoincrement())
   objectType  ImageObjectType
   objectId    Int
-  url         String          @db.VarChar
+  src         String          @db.VarChar
   blurDataUrl String?         @db.VarChar
+  height      Int?
+  width       Int?
+  hexColor    String?
   createdAt   DateTime?       @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime?       @default(now()) @db.Timestamptz(6)
   deletedAt   DateTime?       @db.Timestamptz(6)
-
+  report      Reports?        @relation("ReportImage", fields: [objectId], references: [id], map: "report_image")
   // @@schema("public")
 }
 

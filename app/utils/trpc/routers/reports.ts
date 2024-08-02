@@ -9,7 +9,7 @@ export const reportsRouter = router({
         id: 'asc',
       },
       include: {
-        reportTypes: true,
+        reportType: true,
       },
     })
   }),
@@ -24,7 +24,8 @@ export const reportsRouter = router({
         id,
       },
       include: {
-        reportTypes: true,
+        reportType: true,
+        images: true,
       },
     })
   }),
@@ -37,7 +38,11 @@ export const reportsRouter = router({
         lat: z.number(),
         lng: z.number(),
         photos: z.object({
-          url: z.string(),
+          src: z.string(),
+          height: z.number(),
+          width: z.number(),
+          blurDataUrl: z.string(),
+          hexColor: z.string(),
         }).array().optional(),
       }),
     }),
@@ -60,7 +65,7 @@ export const reportsRouter = router({
           data: payload.photos?.map(p => ({
             objectType: 'REPORT',
             objectId: report.id,
-            url: p.url,
+            ...p,
           })),
         })
       }

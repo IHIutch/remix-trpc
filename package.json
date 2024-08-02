@@ -37,6 +37,7 @@
     "dayjs": "^1.11.12",
     "isbot": "^5.1.13",
     "nanoid": "^5.0.7",
+    "plaiceholder": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.1",

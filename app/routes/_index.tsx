@@ -49,11 +49,11 @@ export default function Index() {
               <div key={report.id} className="relative border-x bg-white p-3 first:rounded-t-md first:border-t last:rounded-b-md last:border-b hover:bg-slate-100">
                 <div>
                   <Link to={`reports/${report.id}`} className="font-medium after:absolute after:inset-0">
-                    {report.reportTypes.group}
+                    {report.reportType.group}
                     {' '}
                     -
                     {' '}
-                    {report.reportTypes.name}
+                    {report.reportType.name}
                   </Link>
                 </div>
                 <div>

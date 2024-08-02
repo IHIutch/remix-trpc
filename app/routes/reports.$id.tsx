@@ -19,6 +19,7 @@ import { button } from '#/components/ui/button'
 import { createContext } from '#/utils/trpc'
 import Avatar from '#/components/ui/avatar'
 import type { RouterOutput } from '#/utils/trpc/routers'
+import { BlurImage } from '#/components/blur-image'
 
 export const meta: MetaFunction = () => {
   return [
@@ -73,11 +74,11 @@ export default function Index() {
         <div>
           <div>
             <span className="text-gray-600">
-              {`#${report?.id}  •  ${report?.reportTypes.group}`}
+              {`#${report?.id}  •  ${report?.reportType.group}`}
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-medium">{ report?.reportTypes.name}</h1>
+            <h1 className="text-3xl font-medium">{ report?.reportType.name}</h1>
           </div>
         </div>
       </div>
@@ -88,11 +89,22 @@ export default function Index() {
             <div className="space-y-8">
               <div>
                 <h3 className="mb-2 text-xl font-medium">Photos</h3>
-                {report?.images && report?.images.length
+                {report?.images?.length > 0
                   ? (
-                      <div className="grid grid-cols-2">
+                      <div className="grid grid-cols-2 gap-4">
                         {report.images.map(image => (
-                          <img key={image.src} src={image.src} alt="" />
+                          <BlurImage
+                            key={image.id}
+                            blurDataUrl={image.blurDataUrl || undefined}
+                            className="aspect-[4/3] overflow-hidden rounded"
+                            img={(
+                              <img
+                                key={image.id}
+                                src={image.src}
+                                className="size-full object-cover"
+                              />
+                            )}
+                          />
                         ))}
                       </div>
                     )

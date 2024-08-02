@@ -22,6 +22,7 @@ import { createCaller } from '#/utils/caller-factory'
 import { createClient } from '#/utils/supabase/supabase.client'
 import { env } from '#/env.server'
 import { Icon } from '#/components/ui/icon'
+import { getImageData } from '#/utils/functions/get-image-data.server'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
@@ -43,7 +44,7 @@ export const loader = defineLoader(async ({ params }) => {
   const reportType = reportTypes.find(rt => slugify(rt.name, { lower: true, strict: true }) === params['report-type'])
 
   if (!reportType) {
-    throw redirect('/create-report')
+    return redirect('/create-report')
   }
 
   return {
@@ -61,7 +62,7 @@ interface PendingImage {
 }
 
 interface UploadedImage {
-  url: string
+  src: string
   name: string
 }
 
@@ -132,7 +133,7 @@ export default function CreateReport() {
         setUploadedPhotos(prev => [
           ...prev,
           {
-            url: uploadedImageUrl,
+            src: uploadedImageUrl,
             name: file.name,
           },
         ])
@@ -192,16 +193,8 @@ export default function CreateReport() {
                           : null}
                         <FadeInImage
                           className="aspect-square size-full rounded-md border border-slate-300 object-cover"
-                          src={found?.url || photo.preview}
+                          src={found?.src || photo.preview}
                           placeholderSrc={photo.preview}
-                          onLoad={() => {
-                            // console.log('loaded', photo)
-                            // setPendingFiles((pendingFiles) => {
-                            //   return pendingFiles.filter(
-                            //     p => p !== pendingFile,
-                            //   )
-                            // })
-                          }}
                         />
                       </div>
                     </div>
@@ -227,7 +220,7 @@ export default function CreateReport() {
             />
             {uploadedPhotos.length > 0
               ? uploadedPhotos.map(p => (
-                <input key={p.url} name={fields.photos.name} value={p.url} readOnly hidden />
+                <input key={p.src} name={fields.photos.name} value={p.src} readOnly hidden />
               ))
               : null}
           </div>
@@ -252,7 +245,7 @@ export default function CreateReport() {
 
         </div>
         <div className="p-4">
-          <Button type="submit" className="w-full bg-blue-600 text-white">Submit</Button>
+          <Button aria-disabled={pendingPhotos.length > 0 && pendingPhotos.length !== uploadedPhotos.length} type="submit" className="w-full bg-blue-600 text-white aria-disabled:bg-blue-400">Submit</Button>
         </div>
       </Form>
 
@@ -265,7 +258,7 @@ export default function CreateReport() {
 }
 
 function FadeInImage({ src, placeholderSrc, onLoad, ...props }: {
-  src: UploadedImage['url']
+  src: UploadedImage['src']
   placeholderSrc?: PendingImage['preview']
   onLoad?: () => void
   className?: string
@@ -315,6 +308,26 @@ export const action = defineAction(async ({ request, params }) => {
   }
   const { headers } = createServerClient(request)
 
+  let photos: {
+    src: string
+    height: number
+    width: number
+    hexColor: string
+    blurDataUrl: string
+  }[] = []
+  if (submission.value.photos) {
+    photos = await Promise.all(submission.value.photos?.map(async (p) => {
+      const { blurDataUrl, height, width, hex } = await getImageData(p)
+      return {
+        src: p,
+        height,
+        width,
+        hexColor: hex,
+        blurDataUrl,
+      }
+    }))
+  }
+
   const caller = createCaller(await createContext(request))
   const report = await caller.reports.create({
     payload: {
@@ -323,7 +336,7 @@ export const action = defineAction(async ({ request, params }) => {
       reportTypeId: reportType?.id,
       lat: 123,
       lng: 123,
-      photos: submission.value.photos?.map(p => ({ url: p })),
+      photos,
     },
   })
 

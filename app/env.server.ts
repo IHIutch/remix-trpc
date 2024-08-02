@@ -14,8 +14,10 @@ export const env = createEnv({
     POSTGRES_URL_NON_POOLING: z.string().url(),
     // # Supabase
     SUPABASE_ANON_KEY: z.string().min(1),
-    SUPABASE_URL: z.string().min(1).url(),
-    VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1),
+    SUPABASE_URL: z.string().url().min(1),
+    VERCEL_PROJECT_PRODUCTION_URL: z.string(),
+    VERCEL_ENV: z.string().optional(),
+    VERCEL_URL: z.string(),
   },
   client: {
     // # Misc
