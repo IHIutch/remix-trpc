@@ -10,6 +10,11 @@ export const reportsRouter = router({
       },
       include: {
         reportType: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
     })
   }),
@@ -26,6 +31,11 @@ export const reportsRouter = router({
       include: {
         reportType: true,
         images: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
     })
   }),

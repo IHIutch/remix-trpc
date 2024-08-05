@@ -37,6 +37,7 @@ model Changelog {
   newValue   Json
   objectAttr String              @db.VarChar
   users      Users               @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  report     Reports?            @relation("ReportChangelog", fields: [objectId], references: [id], map: "report_changelog")
 
   // @@schema("public")
 }
@@ -52,6 +53,8 @@ model Comments {
   updatedAt  DateTime          @default(now()) @db.Timestamptz(6)
   deletedAt  DateTime?         @db.Timestamptz(6)
   users      Users             @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  report     Reports?          @relation("ReportComments", fields: [objectId], references: [id], map: "report_comments")
+
   // @@schema("public")
 }
 
@@ -59,7 +62,7 @@ model ReportTypes {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar
   group       String    @db.VarChar
-  markerColor String?   @db.VarChar
+  markerColor String    @db.VarChar
   createdAt   DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime  @default(now()) @db.Timestamptz(6)
   deletedAt   DateTime? @db.Timestamptz(6)
@@ -81,12 +84,14 @@ model Reports {
   details      String?
   reportTypeId Int
   creatorId    String?     @db.Uuid
-  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime   @default(now()) @db.Timestamptz(6)
+  createdAt    DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime    @default(now()) @db.Timestamptz(6)
   deletedAt    DateTime?   @db.Timestamptz(6)
   users        Users?      @relation(fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reportType   ReportTypes @relation(fields: [reportTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   images       Images[]    @relation("ReportImage")
+  comments     Comments[]  @relation("ReportComments")
+  changelog    Changelog[] @relation("ReportChangelog")
 
   // @@schema("public")
 }
@@ -100,8 +105,8 @@ model Images {
   height      Int?
   width       Int?
   hexColor    String?
-  createdAt   DateTime       @default(now()) @db.Timestamptz(6)
-  updatedAt   DateTime       @default(now()) @db.Timestamptz(6)
+  createdAt   DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime        @default(now()) @db.Timestamptz(6)
   deletedAt   DateTime?       @db.Timestamptz(6)
   report      Reports?        @relation("ReportImage", fields: [objectId], references: [id], map: "report_image")
   // @@schema("public")

@@ -39,7 +39,7 @@ export default function ReportMap({ marker }: {
         <Marker
           width={25}
           anchor={[marker.lat, marker.lng]}
-          color={marker.markerColor || 'black'}
+          color={marker.markerColor}
         />
       </Map>
     </div>

@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Map, Marker, Overlay, ZoomControl } from 'pigeon-maps'
 import { Link } from 'react-aria-components'
-import { cx } from 'cva'
 import dayjs from 'dayjs'
 import { Icon } from './ui/icon'
 import type { RouterOutput } from '#/utils/trpc/routers'
+import { cx } from '#/utils/cva.config'
 
 export default function DashboardMap({ markers }: { markers: RouterOutput['reports']['getAll'] }) {
   const mapTiler = (x: number, y: number, z: number, _dpr?: number) => {
@@ -44,15 +44,9 @@ export default function DashboardMap({ markers }: { markers: RouterOutput['repor
                 offset={[144, 0]}
                 className="z-10"
               >
-                <div className="w-72 rounded-lg border-t-8 bg-white p-4 shadow-xl" style={{ borderTopColor: activePopup.reportType.markerColor || 'black' }}>
+                <div className="w-72 rounded-lg border-t-8 bg-white p-4 shadow-xl" style={{ borderTopColor: activePopup.reportType.markerColor }}>
                   <div className={cx('mb-3 flex items-center gap-1', activePopup.status === 'CREATED' ? 'text-green-700' : 'text-red-700')}>
-                    {activePopup.status === 'CREATED'
-                      ? (
-                          <Icon variant="lock-open-outline" size={5} />
-                        )
-                      : (
-                          <Icon variant="lock-outline" size={5} />
-                        )}
+                    <Icon variant={activePopup.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} size={5} />
                     <span className="text-sm font-medium">
                       {activePopup.status === 'CREATED' ? 'Open' : 'Closed'}
                     </span>
@@ -99,7 +93,7 @@ export default function DashboardMap({ markers }: { markers: RouterOutput['repor
             key={m.id}
             width={25}
             anchor={[m.lat, m.lng]}
-            color={m.reportType.markerColor || 'black'}
+            color={m.reportType.markerColor}
             onClick={() => setActivePopup(m)}
           />
         ))}

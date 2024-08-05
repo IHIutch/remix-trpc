@@ -22,6 +22,7 @@ import Avatar from '#/components/ui/avatar'
 import type { RouterOutput } from '#/utils/trpc/routers'
 import { BlurImage } from '#/components/blur-image'
 import ReportMap from '#/components/report-map.client'
+import { formatDate } from '#/utils/functions/format-date'
 
 export const meta: MetaFunction = () => {
   return [
@@ -64,30 +65,69 @@ export default function Index() {
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-12">
-      <div className="flex items-center gap-6 border-b pb-8">
-        <div>
-          <div
-            className="flex size-16 items-center justify-center rounded-md"
-            style={{ backgroundColor: '#805AD5' }}
-          >
-            <Icon size={10} variant="warning-outline-rounded" className="text-white" />
+      <div className="grid items-center gap-x-6 gap-y-12 lg:grid-cols-3">
+        <div className="col-span-1 lg:col-span-2">
+          <div className="flex items-center gap-4 border-b pb-8">
+            <div>
+              <div
+                className="flex size-16 items-center justify-center rounded-md"
+                style={{ backgroundColor: report.reportType.markerColor }}
+              >
+                <Icon size={10} variant="warning-outline-rounded" className="text-white" />
+              </div>
+            </div>
+            <div>
+              <div>
+                <span className="text-gray-600">
+                  {`#${report?.id}  •  ${report?.reportType.group}`}
+                </span>
+              </div>
+              <div>
+                <h1 className="text-3xl font-medium">{ report?.reportType.name}</h1>
+              </div>
+            </div>
           </div>
         </div>
-        <div>
-          <div>
-            <span className="text-gray-600">
-              {`#${report?.id}  •  ${report?.reportType.group}`}
-            </span>
-          </div>
-          <div>
-            <h1 className="text-3xl font-medium">{ report?.reportType.name}</h1>
+        <div className="col-span-1 h-full lg:col-start-3 lg:row-span-4 lg:row-start-1 lg:border-l lg:pl-6">
+          <h2 className="mb-4 text-2xl font-medium">Status</h2>
+          <div className="space-y-4">
+            <div className={cx('flex gap-2', report.status === 'CREATED' ? 'text-green-700' : 'text-red-700')}>
+              <Icon size={6} variant={report.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} />
+              <p>
+                <span>
+                  {report.status === 'CREATED' ? 'Open' : 'Closed'}
+                </span>
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Icon size={6} variant="forum-outline-rounded" />
+              <p>
+                <span>{report._count.comments}</span>
+                {' '}
+                <span>Comments</span>
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Icon size={6} variant="calendar-today" />
+              <p>
+                Opened on
+                {' '}
+                <time
+                  dateTime={formatDate(report.createdAt, 'YYYY-MM-DD')}
+                  title={formatDate(
+                    report.createdAt,
+                    'MMM D, YYYY h:mm A z',
+                  )}
+                >
+                  {formatDate(report.createdAt, 'MMM D, YYYY')}
+                </time>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="py-8">
-        <div>
+        <div className="col-span-1 lg:col-span-2">
           <h2 className="mb-4 text-2xl font-medium">Details</h2>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-8">
               <div>
                 <h3 className="mb-2 text-xl font-medium">Photos</h3>
@@ -150,7 +190,7 @@ export default function Index() {
                             <ClientOnly>
                               {() => (
                                 <ReportMap marker={{
-                                  markerColor: report.reportType.markerColor || 'black',
+                                  markerColor: report.reportType.markerColor,
                                   lat: report.lat,
                                   lng: report.lng,
                                 }}
@@ -166,23 +206,24 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <div>
-          <h2 className="mb-4 text-2xl font-medium">
-            Activity
-          </h2>
+        <div className="col-span-1 lg:col-span-2">
           <div>
-            <React.Suspense fallback={null}>
-              <Await resolve={Promise.all([comments, changelog])}>
-                {([comments, changelog]) => <ActivityList comments={comments} changelog={changelog} />}
-              </Await>
-            </React.Suspense>
-          </div>
-          <div className="border-t-2 pt-6">
-            <CommentBox />
+            <h2 className="mb-4 text-2xl font-medium">
+              Activity
+            </h2>
+            <div>
+              <React.Suspense fallback={null}>
+                <Await resolve={Promise.all([comments, changelog])}>
+                  {([comments, changelog]) => <ActivityList comments={comments} changelog={changelog} />}
+                </Await>
+              </React.Suspense>
+            </div>
+            <div className="border-t-2 pt-6">
+              <CommentBox />
+            </div>
           </div>
         </div>
       </div>
-      {/* <pre>{JSON.stringify(report, null, 2)}</pre> */}
     </div>
   )
 }

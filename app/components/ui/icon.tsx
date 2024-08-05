@@ -10,6 +10,8 @@ const iconVariants = cva({
       'lock-open-outline': 'icon-[material-symbols--lock-open-outline]',
       'list': 'icon-[material-symbols--list]',
       'map-outline': 'icon-[material-symbols--map-outline]',
+      'forum-outline-rounded': 'icon-[material-symbols--forum-outline-rounded]',
+      'calendar-today': 'icon-[material-symbols--calendar-today]',
     },
     size: {
       12: 'size-12',
