@@ -13,7 +13,7 @@ const toggleButton = cva({
   variants: {
     colorScheme: {
       blue:
-          'bg-white text-black hover:bg-blue-800 hover:text-white aria-pressed:bg-blue-600 aria-pressed:text-white dark:bg-blue-300 dark:text-black dark:open:bg-blue-300 dark:hover:bg-blue-200',
+          'bg-white text-black hover:bg-slate-100 aria-pressed:border-blue-600 aria-pressed:bg-blue-600 aria-pressed:text-white dark:bg-blue-300 dark:text-black dark:open:bg-blue-300 dark:hover:bg-blue-200',
     },
     size: {
       lg: 'h-12 px-6 text-lg',

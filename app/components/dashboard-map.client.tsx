@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Map, Marker, Overlay, ZoomControl } from 'pigeon-maps'
 import { Link } from 'react-aria-components'
 import { cx } from 'cva'
+import dayjs from 'dayjs'
 import { Icon } from './ui/icon'
 import type { RouterOutput } from '#/utils/trpc/routers'
 
@@ -62,9 +63,9 @@ export default function DashboardMap({ markers }: { markers: RouterOutput['repor
                       #
                       {activePopup.id}
                       {' '}
-                      • Opened on
+                      • Opened
                       {' '}
-                      {activePopup.createdAt.toDateString()}
+                      {dayjs(activePopup.createdAt).format('MMM D, YYYY')}
                     </span>
                   </div>
                   <div className="mb-4">

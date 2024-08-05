@@ -46,7 +46,7 @@ export default function Index() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex border-b px-4 py-2">
+      <div className="flex items-center border-b px-4 py-2">
         <div className="lg:hidden">
           <ButtonGroup>
             <ToggleButton size="sm" className="flex items-center gap-1" isSelected={isShowingMapMobile} onPress={() => setIsShowingMapMobile(true)}>
@@ -64,7 +64,7 @@ export default function Index() {
         </div>
       </div>
       {/* Mobile */}
-      <div className="h-full lg:hidden">
+      <div className="h-full overflow-hidden lg:hidden">
         <div className={cx('h-full bg-slate-300', isShowingMapMobile ? 'block' : 'hidden')}>
           <ClientOnly>
             {() => (
@@ -72,7 +72,7 @@ export default function Index() {
             )}
           </ClientOnly>
         </div>
-        <div className={cx('h-full divide-y overflow-auto p-4', isShowingMapMobile ? 'hidden' : 'block')}>
+        <div className={cx('h-full divide-y p-4', isShowingMapMobile ? 'hidden' : 'block')}>
           {reports
             ? reports.map(report => (
               <div key={report.id} className="relative flex gap-2 border-x bg-white p-3 first:rounded-t-md first:border-t last:rounded-b-md last:border-b hover:bg-slate-100">
@@ -100,9 +100,9 @@ export default function Index() {
                       #
                       {report.id}
                       {' '}
-                      • Opened on
+                      • Opened
                       { ' '}
-                      {dayjs(report.createdAt).format('MM/DD/YYYY')}
+                      {dayjs(report.createdAt).format('MMM D, YYYY')}
                     </span>
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export default function Index() {
         </div>
       </div>
       {/* Desktop */}
-      <div className="hidden h-full grow grid-cols-2 overflow-hidden lg:grid">
+      <div className="hidden grow grid-cols-2 overflow-hidden lg:grid">
         <div className="h-full bg-slate-300">
           <ClientOnly>
             {() => (
@@ -120,10 +120,10 @@ export default function Index() {
             )}
           </ClientOnly>
         </div>
-        <div className="h-full divide-y overflow-auto p-4">
+        <div className="h-full overflow-auto p-4">
           {reports
             ? reports.map(report => (
-              <div key={report.id} className="relative flex gap-2 border-x bg-white p-3 first:rounded-t-md first:border-t last:rounded-b-md last:border-b hover:bg-slate-100">
+              <div key={report.id} className="relative flex gap-2 border-x border-t bg-white p-3 first:rounded-t-md last:rounded-b-md last:border-b hover:bg-slate-100">
                 <div className="mt-0.5">
                   {report.status === 'CREATED'
                     ? (
@@ -148,9 +148,9 @@ export default function Index() {
                       #
                       {report.id}
                       {' '}
-                      • Opened on
+                      • Opened
                       { ' '}
-                      {dayjs(report.createdAt).format('MM/DD/YYYY')}
+                      {dayjs(report.createdAt).format('MMM D, YYYY')}
                     </span>
                   </div>
                 </div>
