@@ -24,6 +24,10 @@ import { env } from '#/env.server'
 import { Icon } from '#/components/ui/icon'
 import { getImageData } from '#/utils/functions/get-image-data.server'
 import { Button } from '#/components/ui/button'
+import { TextField, TextFieldErrorMessage } from '#/components/ui/text-field'
+import { Label } from '#/components/ui/label'
+import { Input } from '#/components/ui/input'
+import { TextArea } from '#/components/ui/text-area'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
@@ -226,14 +230,21 @@ export default function CreateReport() {
               : null}
           </div>
           <div>
-            <label className="block" htmlFor={fields.description.id}>Description/Details</label>
-            <textarea {...getTextareaProps(fields.description)} required />
-            {fields.description.errors ? <p id={fields.description.descriptionId}>{fields.description.errors}</p> : null}
+            <TextField isInvalid={!!fields.description.errors}>
+              <Label htmlFor={fields.description.id}>Description/Details</Label>
+              <TextArea {...getTextareaProps(fields.description)} />
+              {fields.description.errors ? <TextFieldErrorMessage id={fields.description.descriptionId}>{fields.description.errors}</TextFieldErrorMessage> : null}
+            </TextField>
           </div>
           <div>
-            <label className="block" htmlFor={fields.email.id}>Email</label>
+            <TextField isInvalid={!!fields.email.errors}>
+              <Label htmlFor={fields.email.id}>Email</Label>
+              <Input {...getInputProps(fields.email, { type: 'email' })} />
+              {fields.email.errors ? <TextFieldErrorMessage id={fields.email.descriptionId}>{fields.email.errors}</TextFieldErrorMessage> : null}
+            </TextField>
+            {/* <label className="block" htmlFor={fields.email.id}>Email</label>
             <input {...getInputProps(fields.email, { type: 'email' })} />
-            {fields.email.errors ? <p id={fields.email.descriptionId}>{fields.email.errors}</p> : null}
+            {fields.email.errors ? <p id={fields.email.descriptionId}>{fields.email.errors}</p> : null} */}
           </div>
 
           {form.errors

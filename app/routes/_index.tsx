@@ -8,7 +8,6 @@ import dayjs from 'dayjs'
 import { createTRPCQueryUtils } from '@trpc/react-query'
 import { QueryClient } from '@tanstack/react-query'
 import { ClientOnly } from 'remix-utils/client-only'
-import { cx } from 'cva'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { trpc } from '#/utils/trpc-client'
 import { Button } from '#/components/ui/button'
@@ -16,6 +15,7 @@ import DashboardMap from '#/components/dashboard-map.client'
 import { Icon } from '#/components/ui/icon'
 import { ButtonGroup } from '#/components/ui/button-group'
 import { ToggleButton } from '#/components/ui/toggle-button'
+import { cx } from '#/utils/cva.config'
 
 export const meta: MetaFunction = () => {
   return [
