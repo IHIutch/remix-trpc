@@ -1,6 +1,28 @@
+import type { VariantProps } from 'cva'
+import { cva } from 'cva'
 import { cx } from '#/utils/cva.config'
 
-export default function Avatar({ name, className }: { name?: string, className?: string }) {
+const avatarVariants = cva({
+  base: 'flex items-center justify-center rounded-full bg-slate-600 text-lg text-white',
+  variants: {
+    size: {
+      12: 'size-12',
+      10: 'size-10',
+      8: 'size-8 text-sm',
+      6: 'size-6 text-xs',
+    },
+  },
+  defaultVariants: {
+    size: 12,
+  },
+})
+
+export interface AvatarProps extends VariantProps<typeof avatarVariants> {
+  name?: string
+  className?: string
+}
+
+export default function Avatar({ name, className, size }: AvatarProps) {
   const getInitials = () => {
     if (!name)
       return null
@@ -12,7 +34,13 @@ export default function Avatar({ name, className }: { name?: string, className?:
   }
 
   return (
-    <div className={cx('flex size-12 items-center justify-center rounded-full bg-slate-600 text-lg text-white', className)}>
+    <div className={cx(
+      avatarVariants({
+        size,
+        className,
+      }),
+    )}
+    >
       {getInitials() ?? <Fallback />}
     </div>
   )

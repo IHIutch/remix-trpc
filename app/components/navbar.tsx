@@ -64,7 +64,7 @@ export default function Navbar() {
                 ? (
                     <Menu>
                       <ReactAria.Button>
-                        <Avatar name={`${user.firstName} ${user.lastName}`} />
+                        <Avatar name={`${user.firstName} ${user.lastName}`} size={10} />
                       </ReactAria.Button>
                       <MenuContent placement="bottom end">
                         <MenuItem href="/profile">My Reports</MenuItem>

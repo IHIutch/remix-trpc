@@ -8,6 +8,8 @@ const iconVariants = cva({
       'location-on-outline': 'icon-[material-symbols--location-on-outline]',
       'lock-outline': 'icon-[material-symbols--lock-outline]',
       'lock-open-outline': 'icon-[material-symbols--lock-open-outline]',
+      'list': 'icon-[material-symbols--list]',
+      'map-outline': 'icon-[material-symbols--map-outline]',
     },
     size: {
       12: 'size-12',
