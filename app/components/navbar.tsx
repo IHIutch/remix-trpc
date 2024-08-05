@@ -3,10 +3,10 @@ import * as ReactAria from 'react-aria-components'
 import Avatar from './ui/avatar'
 import { Menu, MenuContent, MenuItem } from './ui/dropdown'
 import { button } from './ui/button'
-import { useUser } from '#/utils/functions/user'
+import { useOptionalUser } from '#/utils/functions/user'
 
 export default function Navbar() {
-  const user = useUser()
+  const user = useOptionalUser()
   const navItemsLeft = [
     {
       name: 'Reports',
@@ -69,7 +69,7 @@ export default function Navbar() {
                       <MenuContent placement="bottom end">
                         <MenuItem href="/profile">My Reports</MenuItem>
                         <MenuItem href="/settings">Settings</MenuItem>
-                        <MenuItem id="logout">Log Out</MenuItem>
+                        <MenuItem href="/log-out">Log Out</MenuItem>
                       </MenuContent>
                     </Menu>
                   )

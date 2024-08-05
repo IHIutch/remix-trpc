@@ -101,5 +101,5 @@ export async function action({
     }
   }
 
-  return redirect('/protected')
+  return redirect('/profile')
 }

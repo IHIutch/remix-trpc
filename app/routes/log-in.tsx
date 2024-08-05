@@ -88,5 +88,5 @@ export async function action({
     }
   }
 
-  return redirect('/protected', { headers })
+  return redirect('/profile', { headers })
 }
