@@ -23,6 +23,7 @@ import type { RouterOutput } from '#/utils/trpc/routers'
 import { BlurImage } from '#/components/blur-image'
 import ReportMap from '#/components/report-map.client'
 import { formatDate } from '#/utils/functions/format-date'
+import { cx } from '#/utils/cva.config'
 
 export const meta: MetaFunction = () => {
   return [

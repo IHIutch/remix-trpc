@@ -42,6 +42,16 @@ const schema = z.object({
   email: z.string().email().optional(),
 })
 
+interface PendingImage {
+  preview: string
+  name: string
+}
+
+interface UploadedImage {
+  src: string
+  name: string
+}
+
 export const loader = defineLoader(async ({ params }) => {
   invariant(params['report-type'], 'Missing \'report-type\'')
 
@@ -49,7 +59,7 @@ export const loader = defineLoader(async ({ params }) => {
   const reportType = reportTypes.find(rt => slugify(rt.name, { lower: true, strict: true }) === params['report-type'])
 
   if (!reportType) {
-    return redirect('/create-report')
+    throw redirect('/create-report')
   }
 
   return {
@@ -60,16 +70,6 @@ export const loader = defineLoader(async ({ params }) => {
     },
   }
 })
-
-interface PendingImage {
-  preview: string
-  name: string
-}
-
-interface UploadedImage {
-  src: string
-  name: string
-}
 
 export default function CreateReport() {
   const { reportType, ENV } = useLoaderData<typeof loader>()
@@ -329,13 +329,13 @@ export const action = defineAction(async ({ request, params }) => {
   }[] = []
   if (submission.value.photos) {
     photos = await Promise.all(submission.value.photos?.map(async (p) => {
-      const { blurDataUrl, height, width, hex } = await getImageData(p)
+      const imgData = await getImageData(p)
       return {
         src: p,
-        height,
-        width,
-        hexColor: hex,
-        blurDataUrl,
+        height: imgData.height,
+        width: imgData.width,
+        hexColor: imgData.hex,
+        blurDataUrl: imgData.blurDataUrl,
       }
     }))
   }

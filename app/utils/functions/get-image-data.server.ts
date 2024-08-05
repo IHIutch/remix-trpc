@@ -24,7 +24,6 @@ export async function getImageData(src: string) {
     return { blurDataUrl, height, width, hex }
   }
   catch (error) {
-    console.error(getErrorMessage(error))
-    return null
+    throw new Error(getErrorMessage(error))
   }
 }
