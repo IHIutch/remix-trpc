@@ -352,5 +352,5 @@ export const action = defineAction(async ({ request, params }) => {
     },
   })
 
-  return redirect(`/reports/${report.id}`, { headers })
+  throw redirect(`/reports/${report.id}`, { headers })
 })

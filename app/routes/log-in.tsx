@@ -88,5 +88,5 @@ export async function action({
     }
   }
 
-  return redirect('/profile', { headers })
+  throw redirect('/profile', { headers })
 }

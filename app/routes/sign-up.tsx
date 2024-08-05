@@ -101,5 +101,5 @@ export async function action({
     }
   }
 
-  return redirect('/profile')
+  throw redirect('/profile')
 }

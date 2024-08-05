@@ -12,7 +12,7 @@ export const loader = defineLoader(async ({ request }) => {
   // const isLogged = await supabaseClient.auth.getUser()
 
   // if (!isLogged?.data?.user?.id) {
-  //   return redirect('/sign-in')
+  //   throw redirect('/sign-in')
   // }
 
   // const user = await trpcClient(request).auth.getAuthedUser.query()
