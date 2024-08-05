@@ -12,6 +12,7 @@ import { createTRPCQueryUtils } from '@trpc/react-query'
 import { z } from 'zod'
 import { getFormProps, getTextareaProps, useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
+import { ClientOnly } from 'remix-utils/client-only'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { createCaller } from '#/utils/caller-factory'
 import { Icon } from '#/components/ui/icon'
@@ -20,6 +21,7 @@ import { createContext } from '#/utils/trpc'
 import Avatar from '#/components/ui/avatar'
 import type { RouterOutput } from '#/utils/trpc/routers'
 import { BlurImage } from '#/components/blur-image'
+import ReportMap from '#/components/report-map.client'
 
 export const meta: MetaFunction = () => {
   return [
@@ -144,7 +146,17 @@ export default function Index() {
                           <p className="mb-2 text-sm text-gray-600">
                             {`${report.lat.toFixed(3)}, ${report.lng.toFixed(3)}`}
                           </p>
-                          <div className="aspect-video rounded-md bg-slate-400">
+                          <div className="aspect-video overflow-hidden rounded-md bg-slate-400">
+                            <ClientOnly>
+                              {() => (
+                                <ReportMap marker={{
+                                  markerColor: report.reportType.markerColor || 'black',
+                                  lat: report.lat,
+                                  lng: report.lng,
+                                }}
+                                />
+                              )}
+                            </ClientOnly>
                           </div>
                         </div>
                       )

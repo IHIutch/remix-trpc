@@ -6,9 +6,11 @@ import { Link, useLoaderData } from '@remix-run/react'
 import dayjs from 'dayjs'
 import { createTRPCQueryUtils } from '@trpc/react-query'
 import { QueryClient } from '@tanstack/react-query'
+import { ClientOnly } from 'remix-utils/client-only'
 import { trpcServerClient } from '#/utils/trpc-client.server'
 import { trpc } from '#/utils/trpc-client'
 import { Button } from '#/components/ui/button'
+import DashboardMap from '#/components/dashboard-map.client'
 
 export const meta: MetaFunction = () => {
   return [
@@ -43,7 +45,13 @@ export default function Index() {
         </div>
       </div>
       <div className="grid grow grid-cols-2 overflow-hidden">
-        <div className="h-full bg-slate-300"></div>
+        <div className="h-full bg-slate-300">
+          <ClientOnly>
+            {() => (
+              <DashboardMap markers={reports} />
+            )}
+          </ClientOnly>
+        </div>
         <div className="h-full divide-y overflow-auto p-4">
           {reports
             ? reports.map(report => (
