@@ -35,9 +35,6 @@ importers:
       '@t3-oss/env-core':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.5.4)(zod@3.23.8)
-      '@tailwindcss/forms':
-        specifier: ^0.5.7
-        version: 0.5.7(tailwindcss@3.4.7)
       '@tanstack/react-query':
         specifier: ^5.51.15
         version: 5.51.15(react@18.3.1)
@@ -1795,11 +1792,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  '@tailwindcss/forms@0.5.7':
-    resolution: {integrity: sha512-QE7X69iQI+ZXwldE+rzasvbJiyV/ju1FGHH0Qn2W3FKbuYtqp8LKcy6iSw79fVUT5/Vvf+0XgLCeYVG+UV6hOw==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
 
   '@tanstack/query-core@5.51.15':
     resolution: {integrity: sha512-xyobHDJ0yhPE3+UkSQ2/4X1fLSg7ICJI5J1JyU9yf7F3deQfEwSImCDrB1WSRrauJkMtXW7YIEcC0oA6ZZWt5A==}
@@ -4036,10 +4028,6 @@ packages:
   min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
-
-  mini-svg-data-uri@1.4.4:
-    resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
-    hasBin: true
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -7626,11 +7614,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.5.4
 
-  '@tailwindcss/forms@0.5.7(tailwindcss@3.4.7)':
-    dependencies:
-      mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.4.7
-
   '@tanstack/query-core@5.51.15': {}
 
   '@tanstack/query-devtools@5.51.15': {}
@@ -10481,8 +10464,6 @@ snapshots:
   mimic-fn@4.0.0: {}
 
   min-indent@1.0.1: {}
-
-  mini-svg-data-uri@1.4.4: {}
 
   minimatch@3.1.2:
     dependencies:

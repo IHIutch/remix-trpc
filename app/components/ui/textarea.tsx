@@ -15,10 +15,10 @@ const textareaVariants = cva({
   ],
   variants: {
     size: {
-      lg: 'rounded-lg px-4 text-lg',
-      md: 'rounded-md px-4 text-base',
-      sm: 'rounded px-3 text-sm',
-      xs: 'rounded px-2 text-xs',
+      lg: 'rounded-lg px-4 py-2 text-lg',
+      md: 'rounded-md px-4 py-2 text-base',
+      sm: 'rounded px-3 py-2 text-sm',
+      xs: 'rounded p-2 text-xs',
     },
   },
   defaultVariants: {
@@ -26,13 +26,13 @@ const textareaVariants = cva({
   },
 })
 
-export interface TextAreaProps
+export interface TextareaProps
   extends Omit<ReactAria.TextAreaProps, 'size'>,
   VariantProps<typeof textareaVariants> {
   className?: string
 }
 
-export function TextArea({ className, size, ...props }: TextAreaProps) {
+export function Textarea({ className, size, ...props }: TextareaProps) {
   return (
     <ReactAria.TextArea
       className={cx(

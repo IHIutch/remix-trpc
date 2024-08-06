@@ -27,7 +27,7 @@ import { Button } from '#/components/ui/button'
 import { TextField, TextFieldErrorMessage } from '#/components/ui/text-field'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
-import { TextArea } from '#/components/ui/text-area'
+import { Textarea } from '#/components/ui/textarea'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
@@ -232,7 +232,7 @@ export default function CreateReport() {
           <div>
             <TextField isInvalid={!!fields.description.errors}>
               <Label htmlFor={fields.description.id}>Description/Details</Label>
-              <TextArea {...getTextareaProps(fields.description)} />
+              <Textarea {...getTextareaProps(fields.description)} />
               {fields.description.errors ? <TextFieldErrorMessage id={fields.description.descriptionId}>{fields.description.errors}</TextFieldErrorMessage> : null}
             </TextField>
           </div>
@@ -242,9 +242,6 @@ export default function CreateReport() {
               <Input {...getInputProps(fields.email, { type: 'email' })} />
               {fields.email.errors ? <TextFieldErrorMessage id={fields.email.descriptionId}>{fields.email.errors}</TextFieldErrorMessage> : null}
             </TextField>
-            {/* <label className="block" htmlFor={fields.email.id}>Email</label>
-            <input {...getInputProps(fields.email, { type: 'email' })} />
-            {fields.email.errors ? <p id={fields.email.descriptionId}>{fields.email.errors}</p> : null} */}
           </div>
 
           {form.errors
@@ -260,11 +257,6 @@ export default function CreateReport() {
           <Button aria-disabled={pendingPhotos.length > 0 && pendingPhotos.length !== uploadedPhotos.length} type="submit" className="w-full bg-blue-600 text-white aria-disabled:bg-blue-400">Submit</Button>
         </div>
       </Form>
-
-      {/* <div>
-        <pre>{JSON.stringify(pendingPhotos, null, 2)}</pre>
-        <pre>{JSON.stringify(uploadedPhotos, null, 2)}</pre>
-      </div> */}
     </div>
   )
 }
