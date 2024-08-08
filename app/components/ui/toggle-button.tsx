@@ -1,6 +1,6 @@
 import type { VariantProps } from 'cva'
-import { cva, cx } from 'cva'
 import * as ReactAria from 'react-aria-components'
+import { cva, cx } from '#/utils/cva.config'
 
 const toggleButton = cva({
   base: [

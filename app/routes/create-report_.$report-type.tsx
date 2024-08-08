@@ -28,6 +28,7 @@ import { TextField, TextFieldErrorMessage } from '#/components/ui/text-field'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { Textarea } from '#/components/ui/textarea'
+import { useIsPending } from '#/utils/functions/use-pending'
 
 const queryClient = new QueryClient()
 const clientUtils = createTRPCQueryUtils({ queryClient, client: trpcServerClient() })
@@ -75,6 +76,7 @@ export default function CreateReport() {
   const { reportType, ENV } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
+  const isSubmitting = useIsPending()
 
   const inputRef = React.useRef<HTMLInputElement>(null)
 
@@ -186,7 +188,7 @@ export default function CreateReport() {
                   return (
                     <div key={photo.name} className="relative aspect-square w-full overflow-hidden">
                       <ReactAria.Button onPress={() => handleRemoveImage(photo.name)} className="absolute right-2 top-2 z-10 flex size-8 items-center justify-center rounded-full bg-black/70">
-                        <Icon className="text-white" variant="close-small-outline-rounded" />
+                        <Icon className="text-white" name="close-small-outline-rounded" />
                       </ReactAria.Button>
                       <div className="absolute inset-0 size-full">
                         {!found
@@ -254,7 +256,14 @@ export default function CreateReport() {
 
         </div>
         <div className="p-4">
-          <Button aria-disabled={pendingPhotos.length > 0 && pendingPhotos.length !== uploadedPhotos.length} type="submit" className="w-full bg-blue-600 text-white aria-disabled:bg-blue-400">Submit</Button>
+          <Button
+            isDisabled={pendingPhotos.length > 0 && pendingPhotos.length !== uploadedPhotos.length}
+            isLoading={isSubmitting}
+            type="submit"
+            className="w-full bg-blue-600 text-white aria-disabled:bg-blue-400"
+          >
+            Submit
+          </Button>
         </div>
       </Form>
     </div>

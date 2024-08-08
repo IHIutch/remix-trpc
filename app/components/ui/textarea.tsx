@@ -1,5 +1,6 @@
-import { type VariantProps, cva, cx } from 'cva'
+import type { VariantProps } from 'cva'
 import * as ReactAria from 'react-aria-components'
+import { cva, cx } from '#/utils/cva.config'
 
 const textareaVariants = cva({
   base: [

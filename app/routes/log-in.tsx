@@ -13,9 +13,10 @@ import { Link } from 'react-aria-components'
 import { createClient } from '#/utils/supabase/supabase.server'
 import { getErrorMessage } from '#/utils/functions'
 import { Button } from '#/components/ui/button'
-import { TextField, TextFieldErrorMessage } from '#/components/ui/text-field'
+import { TextField, TextFieldDescription, TextFieldErrorMessage } from '#/components/ui/text-field'
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
+import { useIsPending } from '#/utils/functions/use-pending'
 
 const schema = z.object({
   email: z.string().min(1),
@@ -25,6 +26,7 @@ const schema = z.object({
 export default function SignIn() {
   const actionData = useActionData<typeof action>()
   const navigation = useNavigation()
+  const isSubmitting = useIsPending()
 
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -72,7 +74,9 @@ export default function SignIn() {
               </div>
               <div className="flex items-center justify-between">
                 <Link className="font-medium text-blue-700 underline" href="/forgot">Forgot Password?</Link>
-                <Button type="submit">Log In</Button>
+                <Button type="submit" isLoading={isSubmitting} className="relative">
+                  Log In
+                </Button>
               </div>
               {form.errors
                 ? (

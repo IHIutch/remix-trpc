@@ -18,6 +18,7 @@ import { TextField, TextFieldDescription, TextFieldErrorMessage } from '#/compon
 import { Label } from '#/components/ui/label'
 import { Input } from '#/components/ui/input'
 import { prisma } from '#/utils/prisma.server'
+import { useIsPending } from '#/utils/functions/use-pending'
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -29,6 +30,7 @@ const schema = z.object({
 export default function SignIn() {
   const response = useActionData<typeof action>()
   const navigation = useNavigation()
+  const isSubmitting = useIsPending()
 
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -101,7 +103,7 @@ export default function SignIn() {
                 : null}
               <div className="flex items-center justify-between">
                 <Link className="font-medium text-blue-700 underline" href="/log-in">Already have an account?</Link>
-                <Button type="submit" className="bg-black text-white">
+                <Button type="submit" isLoading={isSubmitting} className="bg-black text-white">
                   Sign Up
                 </Button>
               </div>

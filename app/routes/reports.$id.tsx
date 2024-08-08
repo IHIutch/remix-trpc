@@ -74,7 +74,7 @@ export default function Index() {
                 className="flex size-16 items-center justify-center rounded-md"
                 style={{ backgroundColor: report.reportType.markerColor }}
               >
-                <Icon size={10} variant="warning-outline-rounded" className="text-white" />
+                <Icon size={10} name="warning-outline-rounded" className="text-white" />
               </div>
             </div>
             <div>
@@ -93,7 +93,7 @@ export default function Index() {
           <h2 className="mb-4 text-2xl font-medium">Status</h2>
           <div className="space-y-4">
             <div className={cx('flex gap-2', report.status === 'CREATED' ? 'text-green-700' : 'text-red-700')}>
-              <Icon size={6} variant={report.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} />
+              <Icon size={6} name={report.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} />
               <p>
                 <span>
                   {report.status === 'CREATED' ? 'Open' : 'Closed'}
@@ -101,7 +101,7 @@ export default function Index() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Icon size={6} variant="forum-outline-rounded" />
+              <Icon size={6} name="forum-outline-rounded" />
               <p>
                 <span>{report._count.comments}</span>
                 {' '}
@@ -109,7 +109,7 @@ export default function Index() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Icon size={6} variant="calendar-today" />
+              <Icon size={6} name="calendar-today" />
               <p>
                 Opened on
                 {' '}

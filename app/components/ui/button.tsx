@@ -1,5 +1,7 @@
-import { type VariantProps, cva, cx } from 'cva'
+import type { VariantProps } from 'cva'
 import * as ReactAria from 'react-aria-components'
+import { Icon } from './icon'
+import { cva, cx } from '#/utils/cva.config'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const button = cva({
@@ -32,16 +34,21 @@ export interface ButtonProps
   extends ReactAria.ButtonProps,
   VariantProps<typeof button> {
   className?: string
+  isLoading?: boolean
+  children?: React.ReactNode
 }
 
 export function Button({
   className,
   colorScheme,
   size,
+  isLoading,
+  children,
   ...props
 }: ButtonProps) {
   return (
     <ReactAria.Button
+      isDisabled={props.isDisabled || isLoading}
       className={cx(
         button({
           colorScheme,
@@ -50,6 +57,19 @@ export function Button({
         }),
       )}
       {...props}
-    />
+    >
+      {isLoading
+        ? (
+            <>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Icon size={5} name="progress-activity" className="animate-spin" />
+              </div>
+              <span className="opacity-0">
+                {children}
+              </span>
+            </>
+          )
+        : children}
+    </ReactAria.Button>
   )
 }

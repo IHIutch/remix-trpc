@@ -1,8 +1,9 @@
-import { type VariantProps, cva, cx } from 'cva'
+import type { VariantProps } from 'cva'
+import { cva, cx } from '#/utils/cva.config'
 
 const iconVariants = cva({
   variants: {
-    variant: {
+    name: {
       'warning-outline-rounded': 'icon-[material-symbols--warning-outline-rounded]',
       'close-small-outline-rounded': 'icon-[material-symbols--close-small-outline-rounded]',
       'location-on-outline': 'icon-[material-symbols--location-on-outline]',
@@ -12,6 +13,7 @@ const iconVariants = cva({
       'map-outline': 'icon-[material-symbols--map-outline]',
       'forum-outline-rounded': 'icon-[material-symbols--forum-outline-rounded]',
       'calendar-today': 'icon-[material-symbols--calendar-today]',
+      'progress-activity': 'icon-[material-symbols--progress-activity]',
     },
     size: {
       12: 'size-12',
@@ -19,6 +21,7 @@ const iconVariants = cva({
       8: 'size-8',
       6: 'size-6',
       5: 'size-5',
+      4: 'size-4',
     },
   },
   defaultVariants: {
@@ -27,17 +30,17 @@ const iconVariants = cva({
 })
 
 export interface IconProps
-  extends Omit<VariantProps<typeof iconVariants>, 'variant'>,
-  Required<Pick<VariantProps<typeof iconVariants>, 'variant'>> {
+  extends Omit<VariantProps<typeof iconVariants>, 'name'>,
+  Required<Pick<VariantProps<typeof iconVariants>, 'name'>> {
   className?: string
 }
 
-export function Icon({ className, variant, size, ...props }: IconProps) {
+export function Icon({ className, name, size, ...props }: IconProps) {
   return (
     <div
       className={cx(
         iconVariants({
-          variant,
+          name,
           size,
           className,
         }),

@@ -46,7 +46,7 @@ export default function DashboardMap({ markers }: { markers: RouterOutput['repor
               >
                 <div className="w-72 rounded-lg border-t-8 bg-white p-4 shadow-xl" style={{ borderTopColor: activePopup.reportType.markerColor }}>
                   <div className={cx('mb-3 flex items-center gap-1', activePopup.status === 'CREATED' ? 'text-green-700' : 'text-red-700')}>
-                    <Icon variant={activePopup.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} size={5} />
+                    <Icon name={activePopup.status === 'CREATED' ? 'lock-open-outline' : 'lock-outline'} size={5} />
                     <span className="text-sm font-medium">
                       {activePopup.status === 'CREATED' ? 'Open' : 'Closed'}
                     </span>
@@ -73,7 +73,7 @@ export default function DashboardMap({ markers }: { markers: RouterOutput['repor
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-gray-500">
-                      <Icon variant="location-on-outline" size={5} />
+                      <Icon name="location-on-outline" size={5} />
                       <span className="text-sm">
                         {' '}
                         {activePopup.lat.toFixed(3)}

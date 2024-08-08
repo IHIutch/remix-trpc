@@ -66,7 +66,7 @@ export function MenuItem({
           {selectionMode === 'single'
             ? (
                 <Icon
-                  variant="warning-outline-rounded"
+                  name="warning-outline-rounded"
                   aria-hidden="true"
                   className="group-selected:visible invisible size-2 fill-current"
                   size={6}
@@ -75,7 +75,7 @@ export function MenuItem({
             : selectionMode === 'multiple'
               ? (
                   <Icon
-                    variant="warning-outline-rounded"
+                    name="warning-outline-rounded"
                     aria-hidden="true"
                     className="group-selected:visible invisible size-4"
                     size={6}

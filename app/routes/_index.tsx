@@ -50,11 +50,11 @@ export default function Index() {
         <div className="lg:hidden">
           <ButtonGroup>
             <ToggleButton size="sm" className="flex items-center gap-1" isSelected={isShowingMapMobile} onPress={() => setIsShowingMapMobile(true)}>
-              <Icon variant="map-outline" size={6} />
+              <Icon name="map-outline" size={6} />
               <span>Map View</span>
             </ToggleButton>
             <ToggleButton size="sm" className="flex items-center gap-1" isSelected={!isShowingMapMobile} onPress={() => setIsShowingMapMobile(false)}>
-              <Icon variant="list" size={6} />
+              <Icon name="list" size={6} />
               <span>List View</span>
             </ToggleButton>
           </ButtonGroup>
@@ -79,10 +79,10 @@ export default function Index() {
                 <div className="mt-0.5">
                   {report.status === 'CREATED'
                     ? (
-                        <Icon variant="lock-open-outline" size={5} className="text-green-700" />
+                        <Icon name="lock-open-outline" size={5} className="text-green-700" />
                       )
                     : (
-                        <Icon variant="lock-outline" size={5} className="text-red-700" />
+                        <Icon name="lock-outline" size={5} className="text-red-700" />
                       )}
                 </div>
                 <div>
@@ -127,10 +127,10 @@ export default function Index() {
                 <div className="mt-0.5">
                   {report.status === 'CREATED'
                     ? (
-                        <Icon variant="lock-open-outline" size={5} className="text-green-700" />
+                        <Icon name="lock-open-outline" size={5} className="text-green-700" />
                       )
                     : (
-                        <Icon variant="lock-outline" size={5} className="text-red-700" />
+                        <Icon name="lock-outline" size={5} className="text-red-700" />
                       )}
                 </div>
                 <div>

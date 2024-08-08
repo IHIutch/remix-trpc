@@ -1,6 +1,5 @@
 import type { VariantProps } from 'cva'
-import { cva } from 'cva'
-import { cx } from '#/utils/cva.config'
+import { cva, cx } from '#/utils/cva.config'
 
 const avatarVariants = cva({
   base: 'flex items-center justify-center rounded-full bg-slate-600 text-lg text-white',
